@@ -8,6 +8,7 @@ from nltk.corpus import stopwords
 from collections import Counter,defaultdict
 import string
 import textstat
+import pickle
 
 #HOUSEKEEPING
 stop_words = stopwords.words('english')
@@ -27,17 +28,17 @@ def load_data_files_into_raw_df(conference_directory_path,data_split_type):
             data = json.load(file)
             paper_id = data['name']
             paper_metadata = data['metadata']
-            
+
             #ABSTRACT
             abstract_text = paper_metadata['abstractText']
-            
+
             #TITLE
             title = paper_metadata['title'].lower()
             with open('WordsFromTitleofTop200Papers.txt', 'r') as f:
                 top_200_titles_words_counter = Counter([word for word in f.read().translate(punct_removal_table).lower().split() if word not in stop_words])
                 #TAKE TOP 5%
                 top_200_titles_vocab = [key for key,value in top_200_titles_words_counter.most_common(int(0.05*len(top_200_titles_words_counter))).items()]
-            #1. IF TITLE CONTAINS ATLEAST 2 WORDS 
+            #1. IF TITLE CONTAINS ATLEAST 2 WORDS
             if set(title.split()).intersection(set(top_200_titles_vocab)) > 0:
                 file_dict['words_from_top_200_title'] = True
             #2. TITLE LENTGTH
@@ -46,7 +47,7 @@ def load_data_files_into_raw_df(conference_directory_path,data_split_type):
             flesch = 1/textstat.flesch_reading_ease(title)
             dale_chall = textstat.dale_chall_readability_score(title)
             file_dict['title_complexity'] = (flesch + dale_chall)/2
-            
+
             #AUTHORS
             #1. NUMBER OF AUTHORS
             file_dict['number_of_authors'] = paper_metadata['authors']
@@ -54,17 +55,23 @@ def load_data_files_into_raw_df(conference_directory_path,data_split_type):
             author_emails = paper_metadata['emails']
             author_institutes = [email.split('@')[1] for email in author_emails]
             #read author-uni file
-            author_university_df = pd.read_csv("author_university_list.csv")
+            author_university_df = pd.read_csv("data/author_university_list.csv")
             unique_unis = author_university_df['affiliation'].unique()
             author_university_df_unique_unis = author_university_df.loc[author_university_df['affiliation'].isin(unique_unis)]
             #get list of unis from email ids
-            
+
             #read uni-score file
             university_score_df = pd.read_csv("csrankings.csv").drop_duplicates(subset=['institute'])
-            
-            
-            
-            
+
+            #load the affiliation_dict
+            with open("processed_data/affiliation_dict", "rb") as input_file:
+                affiliation_dict = pickle.load(input_file)
+
+            #use this https://stackoverflow.com/questions/10018679/python-find-closest-string-from-a-list-to-another-string
+            #to find the closest match in of email in affiliation_dict.keys()
+            #same can be used for university
+            #jo error ayega to ayega
+
     return paper_data_df
-                
+
 raw_df_content = load_data_files_into_raw_df('data/iclr_2017','train')
