@@ -8,10 +8,17 @@ from nltk.corpus import stopwords
 from collections import Counter,defaultdict
 import string
 import textstat
+import statistics
 
 #HOUSEKEEPING
 stop_words = stopwords.words('english')
 punct_removal_table = {ord(char): None for char in string.punctuation}
+
+#read author-uni file
+author_university_df = pd.read_csv("author_university_list.csv").drop_duplicates(subset=['affiliation'])
+
+#read uni-score file
+university_score_df = pd.read_csv("csrankings.csv").drop_duplicates(subset=['institute'])
 
 def load_data_files_into_raw_df(conference_directory_path,data_split_type):
 
@@ -51,18 +58,28 @@ def load_data_files_into_raw_df(conference_directory_path,data_split_type):
             #1. NUMBER OF AUTHORS
             file_dict['number_of_authors'] = paper_metadata['authors']
             #2. AUTHOR AFFILIATION
-            author_emails = paper_metadata['emails']
-            author_institutes = [email.split('@')[1] for email in author_emails]
-            #read author-uni file
-            author_university_df = pd.read_csv("author_university_list.csv")
-            unique_unis = author_university_df['affiliation'].unique()
-            author_university_df_unique_unis = author_university_df.loc[author_university_df['affiliation'].isin(unique_unis)]
+            author_emails = [email.split('@')[1] for email in paper_metadata['emails']]
             #get list of unis from email ids
+            author_universities = []
+            '''for email in author_emails:
+            try:
+                author_universities.append(author_university_df[author_university_df['homepage'].str.contains(institute)]['affiliation']
+            except Exception as e:
+                author_unis = '''
             
-            #read uni-score file
-            university_score_df = pd.read_csv("csrankings.csv").drop_duplicates(subset=['institute'])
             
             
+            #REFERENCES
+            references_list,ref_mentions_list = paper_metadata['references'],paper_metadata['referenceMentions']
+            #1. NUM OF REFRERENCES
+            file_dict['num_of_references'] = len(references_list)
+            #2. MOST RECENT REFERENCE YEAR
+            ref_years_list = [ref_dict['year'] for ref_dict in references_list]
+            file_dict['most_recent_ref_year'] = max(ref_years_list)
+            #3. AVG LENGTH OF REF MENTION
+            file_dict['avg_len_of_ref_mention'] = statistics.mean([ref_dict['endOffset'] - ref_dict['startOffset'] for ref_dict in ref_mentions_list])
+            #4. NUMBER OF RECENT REFERENCES (current recent ref behnchmark = 4)
+            file_dict['num_of_recent_references'] = sum([1 for year in ref_years_list if paper_metadata['year']-year<4])
             
             
     return paper_data_df
