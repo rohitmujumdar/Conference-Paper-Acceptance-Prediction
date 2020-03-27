@@ -45,16 +45,24 @@ def load_data_files_into_raw_df(conference_directory_path,data_split_type):
             #3. TITLE COMPLEXITY
             flesch = 1/textstat.flesch_reading_ease(title)
             dale_chall = textstat.dale_chall_readability_score(title)
-            file_dict['title_complexity'] = flesch + dale_chall
+            file_dict['title_complexity'] = (flesch + dale_chall)/2
             
             #AUTHORS
             #1. NUMBER OF AUTHORS
             file_dict['number_of_authors'] = paper_metadata['authors']
             #2. AUTHOR AFFILIATION
             author_emails = paper_metadata['emails']
-            data = pd.read_csv("author_university_list.csv") 
-                
-
+            author_institutes = [email.split('@')[1] for email in author_emails]
+            #read author-uni file
+            author_university_df = pd.read_csv("author_university_list.csv")
+            unique_unis = author_university_df['affiliation'].unique()
+            author_university_df_unique_unis = author_university_df.loc[author_university_df['affiliation'].isin(unique_unis)]
+            #get list of unis from email ids
+            
+            #read uni-score file
+            university_score_df = pd.read_csv("csrankings.csv").drop_duplicates(subset=['institute'])
+            
+            
             
             
     return paper_data_df
