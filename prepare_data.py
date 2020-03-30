@@ -10,10 +10,24 @@ import string
 import textstat
 import statistics
 import pickle
+import torch
+from transformers import *
 
 #HOUSEKEEPING
 stop_words = stopwords.words('english')
 punct_removal_table = {ord(char): None for char in string.punctuation}
+MODELS = [(BertModel,       BertTokenizer,       'bert-base-uncased'),
+          (OpenAIGPTModel,  OpenAIGPTTokenizer,  'openai-gpt'),
+          (GPT2Model,       GPT2Tokenizer,       'gpt2'),
+          (CTRLModel,       CTRLTokenizer,       'ctrl'),
+          (TransfoXLModel,  TransfoXLTokenizer,  'transfo-xl-wt103'),
+          (XLNetModel,      XLNetTokenizer,      'xlnet-base-cased'),
+          (XLMModel,        XLMTokenizer,        'xlm-mlm-enfr-1024'),
+          (DistilBertModel, DistilBertTokenizer, 'distilbert-base-cased'),
+          (RobertaModel,    RobertaTokenizer,    'roberta-base'),
+          (XLMRobertaModel, XLMRobertaTokenizer, 'xlm-roberta-base'),
+         ]
+nlp = pipeline('feature-extraction') 
 
 #read author-uni file
 author_university_df = pd.read_csv("author_university_list.csv").drop_duplicates(subset=['affiliation'])
@@ -100,7 +114,39 @@ def load_data_files_into_raw_df(conference_directory_path,data_split_type):
             #to find the closest match in of email in affiliation_dict.keys()
             #same can be used for university
             #jo error ayega to ayega
-
+                
+            #CONTENT
+            #content housekeeping
+            sections = paper_metadata['sections']
+            section_content = ''
+            for section in sections:
+                section_content = section_content + " " + section['text'].translate(punct_removal_table).lower()
+            file_dict['contains_githib_link'],file_dict['contains_appendix'] = False,False
+            
+            #1. NUMBER OF SECTIONS
+            file_dict['number_of_sections'] = len(sections)
+            for section in sections:
+                #2. CONTAINS GITHUB LINK
+                if section['text'].lower().contains('github'):
+                    file_dict['contains_githib_link'] = True
+                    break
+            #3. readability
+            flesch_score,dale_chall_score = 0,0
+            for section in sections:
+                flesch_score = flesch_score + textstat.flesch_reading_ease(section['text'])
+                dale_chall_score = dale_chall_score + textstat.dale_chall_readability_score(section['text'])
+            flesch_score,dale_chall_score = flesch_score/file_dict['number_of_sections'],dale_chall_score/file_dict['number_of_sections']  
+            file_dict['content_complexity'] = ((1/flesch) + dale_chall)/2
+            #4. CONTAINS APPENDIX
+            for section in sections:
+                #2. CONTAINS GITHUB LINK
+                if section['heading'].contains('APPENDIX') or section['heading'].split()[0] in set(string.ascii_uppercase):
+                    file_dict['contains_appendix'] = True
+                    break
+            #5. NUMBER OF UNIQUE WORDS
+X            file_dict['number_of_unique_words'] = len(Counter(section_content))
+            #6.  
+            
     return paper_data_df
 
 raw_df_content = load_data_files_into_raw_df('data/iclr_2017','train')

@@ -1,28 +1,34 @@
 import pandas as pd
 import pickle
 
-df = pd.read_csv("data/author_university_list.csv")
+df = pd.read_csv("author_university_list.csv")
 interim_mapper = {}
 mapper = {}
 for index, row in df.iterrows():
     # name,affiliation,homepage,scholarid
     link = row['homepage']
-    if "http" in link:
-        base = link.split("/")[2]
-    else:
-        base = link.split("/")[0]
-
-    if "www" in base:
-        base = ".".join(base.split(".")[1:])
-
-    if base in interim_mapper:
-        if not row["affiliation"] in interim_mapper[base]:
-            interim_mapper[base][row["affiliation"]] = 1
+    try:
+        if "http" in link:
+            base = link.split("/")[2]
         else:
-            interim_mapper[base][row["affiliation"]] += 1
-    else:
-        interim_mapper[base] = {}
-        interim_mapper[base][row["affiliation"]] = 1
+            base = link.split("/")[0]
+    
+        if "www" in base:
+            base = ".".join(base.split(".")[1:])
+            
+        if base in interim_mapper:
+            if not row["affiliation"] in interim_mapper[base]:
+                interim_mapper[base][row["affiliation"]] = 1
+            else:
+                interim_mapper[base][row["affiliation"]] += 1
+        else:
+            interim_mapper[base] = {}
+            interim_mapper[base][row["affiliation"]] = 1
+            
+    except Exception as e:
+       print("Homepage : ",row['homepage']," defaulted!") 
+
+    
 
 # for base in interim_mapper:
 #     if len( interim_mapper[base].keys()) > 1:
