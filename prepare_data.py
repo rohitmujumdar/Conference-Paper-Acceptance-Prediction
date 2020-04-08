@@ -262,12 +262,3 @@ def build_affiliation_dictionary(author_university_df,university_score_df):
         pickle.dump(mapper, output_file)'''
 
     return mapper
-
-data_path = 'data/'
-#read author-affiliation file from csrankings hidden page
-author_university_df = pd.read_csv(os.path.join("author_university_list.csv"))
-#read university-research score file from csrankings main page
-university_score_df = pd.read_csv(os.path.join("csrankings.csv")).drop_duplicates(subset=['institute'])
-email_institute_affiliation_mapper = build_affiliation_dictionary(author_university_df,university_score_df)
-tfidf_matrix = build_and_save_tfidf_model(data_path)
-raw_df_content = load_data_files_into_raw_df(data_path, email_institute_affiliation_mapper, tfidf_matrix)
