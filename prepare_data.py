@@ -37,7 +37,7 @@ def load_data_files_into_raw_df(data_path, email_institute_affiliation_mapper, t
     model = model_class.from_pretrained(pretrained_weights)
     nlp = pipeline('feature-extraction')
 
-    with open('WordsFromTitleofTop200Papers.txt',encoding="utf8") as f:
+    with open(os.path.join(data_path,'WordsFromTitleofTop200Papers.txt'),encoding="utf8") as f:
         top_200_titles_words_counter = Counter([word for word in f.read().translate(punct_removal_table).lower().split() if word not in stop_words])
         #TAKE TOP 5%
         top_200_titles_vocab = [key for key,value in top_200_titles_words_counter.most_common(int(0.05*len(top_200_titles_words_counter)))]
