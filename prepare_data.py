@@ -43,6 +43,7 @@ def load_data_files_into_raw_df(data_path, email_institute_affiliation_mapper, t
         top_200_titles_vocab = [key for key,value in top_200_titles_words_counter.most_common(int(0.05*len(top_200_titles_words_counter)))]
 
     directory_in_string = data_path + '/iclr_2017/train/parsed_pdfs'
+    review_directory_in_string = data_path + '/iclr_2017/train/reviews'
     directory_content = os.fsencode(directory_in_string)
     list_of_file_dicts,paper_data_df = [],pd.DataFrame()
     file_number = 0
@@ -262,3 +263,6 @@ def build_affiliation_dictionary(author_university_df,university_score_df):
         pickle.dump(mapper, output_file)'''
 
     return mapper
+
+
+def read_reviews(filename):
