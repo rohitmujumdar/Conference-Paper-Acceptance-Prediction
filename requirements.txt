@@ -1,0 +1,10 @@
+numpy
+pandas
+json
+textstat
+pickle
+torch
+transformers
+nltk
+tqdm
+difflib
