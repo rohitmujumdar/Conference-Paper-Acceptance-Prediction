@@ -18,7 +18,7 @@ from nltk.corpus import stopwords
 from tqdm import tqdm
 import difflib
 
-def load_data_files_into_raw_df(data_path, email_institute_affiliation_mapper, tfidf_matrix):
+def load_data_files_into_raw_df(data_path, data_split_category, email_institute_affiliation_mapper, tfidf_matrix):
     stop_words = stopwords.words('english')
     punct_removal_table = {ord(char): None for char in string.punctuation}
 
@@ -42,8 +42,10 @@ def load_data_files_into_raw_df(data_path, email_institute_affiliation_mapper, t
         #TAKE TOP 5%
         top_200_titles_vocab = [key for key,value in top_200_titles_words_counter.most_common(int(0.05*len(top_200_titles_words_counter)))]
 
-    directory_in_string = data_path + '/iclr_2017/train/parsed_pdfs'
-    review_directory_in_string = data_path + '/iclr_2017/train/reviews'
+    directory_in_string = data_path + '/iclr_2017/' + str(data_split_category) + '/parsed_pdfs'
+    #directory_in_string = data_path + '/iclr_2017/train/parsed_pdfs'
+    #review_directory_in_string = data_path + '/iclr_2017/train/reviews'
+    review_directory_in_string = data_path + '/iclr_2017/' + str(data_split_category) + '/reviews'
     directory_content = os.fsencode(directory_in_string)
     list_of_file_dicts,paper_data_df = [],pd.DataFrame()
     file_number = 0
@@ -196,11 +198,11 @@ def load_data_files_into_raw_df(data_path, email_institute_affiliation_mapper, t
     return paper_data_df
 
 
-def build_and_save_tfidf_model(data_path):
+def build_and_save_tfidf_model(data_path,data_split_category):
     #collect corpus
     punct_removal_table = {ord(char): None for char in string.punctuation}
     corpus = []
-    directory_in_string = data_path + '/iclr_2017/train/parsed_pdfs'
+    directory_in_string = data_path + '/iclr_2017/' + str(data_split_category) + '/parsed_pdfs'
     directory_content = os.fsencode(directory_in_string)
     for file in tqdm(os.listdir(directory_content)):
         filename = os.fsdecode(file)
