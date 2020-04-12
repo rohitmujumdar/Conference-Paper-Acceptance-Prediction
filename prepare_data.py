@@ -33,9 +33,11 @@ def load_data_files_into_raw_df(data_path, data_split_category, email_institute_
             "XLMRobertaModel" : (XLMRobertaModel, XLMRobertaTokenizer, 'xlm-roberta-base')}
     model_class, tokenizer_class, pretrained_weights = MODELS['BertModel']
     #Load pretrained model/tokenizer
+    print("LOADING TRANSFORMER MODEL ............")
     tokenizer = tokenizer_class.from_pretrained(pretrained_weights)
     model = model_class.from_pretrained(pretrained_weights)
     nlp = pipeline('feature-extraction')
+    print("TRANSFORMER MODEL LOADED!")
 
     with open(os.path.join(data_path,'WordsFromTitleofTop200Papers.txt'),encoding="utf8") as f:
         top_200_titles_words_counter = Counter([word for word in f.read().translate(punct_removal_table).lower().split() if word not in stop_words])
@@ -49,6 +51,7 @@ def load_data_files_into_raw_df(data_path, data_split_category, email_institute_
     directory_content = os.fsencode(directory_in_string)
     list_of_file_dicts,paper_data_df = [],pd.DataFrame()
     file_number = 0
+    print("FEATURIZING DATA ............")
     for file in tqdm(os.listdir(directory_content)):
         filename = os.fsdecode(file)
         file_dict = defaultdict()
@@ -159,43 +162,59 @@ def load_data_files_into_raw_df(data_path, data_split_category, email_institute_
             #print("Extracting content features.....")
             #content housekeeping
             sections = paper_metadata['sections']
-            section_content = ''
-            for section in sections:
-                section_content = section_content + " " + section['text'].translate(punct_removal_table).lower()
-            file_dict['contains_githib_link'],file_dict['contains_appendix'] = False,False
+            if sections is None:
+                continue
+            else:
+                section_content = ''
+                for section in sections:
+                    section_content = section_content + " " + section['text'].translate(punct_removal_table).lower()
+                file_dict['contains_githib_link'],file_dict['contains_appendix'] = False,False
 
-            #1. NUMBER OF SECTIONS
-            file_dict['number_of_sections'] = len(sections)
+                #1. NUMBER OF SECTIONS
+                file_dict['number_of_sections'] = len(sections)
 
-            #2. CONTAINS GITHUB LINK
-            for section in sections:
-                if 'github' in section['text'].lower():
-                    file_dict['contains_githib_link'] = True
-                    break
-
-            #3. READABILITY
-            flesch_score,dale_chall_score = 0,0
-            for section in sections:
-                flesch_score = flesch_score + textstat.flesch_reading_ease(section['text'])
-                dale_chall_score = dale_chall_score + textstat.dale_chall_readability_score(section['text'])
-            flesch_score,dale_chall_score = flesch_score/file_dict['number_of_sections'],dale_chall_score/file_dict['number_of_sections']
-            file_dict['content_complexity'] = ((1/flesch_score) + dale_chall_score)/2
-
-            #4. CONTAINS APPENDIX
-            for section in sections:
-                if section['heading'] is not None:
-                    if 'APPENDIX' in section['heading'] or section['heading'].split()[0] in set(string.ascii_uppercase):
-                        file_dict['contains_appendix'] = True
+                #2. CONTAINS GITHUB LINK
+                for section in sections:
+                    if 'github' in section['text'].lower():
+                        file_dict['contains_githib_link'] = True
                         break
 
-            #5. NUMBER OF UNIQUE WORDS
-            file_dict['number_of_unique_words'] = len(Counter(section_content))
+                #3. READABILITY
+                flesch_score,dale_chall_score = 0,0
+                for section in sections:
+                    flesch_score = flesch_score + textstat.flesch_reading_ease(section['text'])
+                    dale_chall_score = dale_chall_score + textstat.dale_chall_readability_score(section['text'])
+                flesch_score,dale_chall_score = flesch_score/file_dict['number_of_sections'],dale_chall_score/file_dict['number_of_sections']
+                file_dict['content_complexity'] = ((1/flesch_score) + dale_chall_score)/2
+
+                #4. CONTAINS APPENDIX
+                for section in sections:
+                    if section['heading'] is not None:
+                        if 'APPENDIX' in section['heading'] or section['heading'].split()[0] in set(string.ascii_uppercase):
+                            file_dict['contains_appendix'] = True
+                            break
+
+                #5. NUMBER OF UNIQUE WORDS
+                file_dict['number_of_unique_words'] = len(Counter(section_content))
             ################################ CONTENT ###################################################
 
         list_of_file_dicts.append(file_dict)
-        #print("Closing file : ",filename)
-    paper_data_df = pd.DataFrame(list_of_file_dicts)
-    return paper_data_df
+            
+    features_df = pd.DataFrame(list_of_file_dicts)
+    return features_df
+
+def collect_data_labels(features_df, data_path, data_split_category):
+
+    print("COLLECTING DATA LABELS ............")
+    accepted_values = []
+    review_directory_in_string = data_path + '/iclr_2017/' + str(data_split_category) + '/reviews'
+    for index, row in tqdm(features_df.iterrows()):
+        filename = row['paper_id'].replace(".pdf","") + '.json'
+        with open(os.path.join(review_directory_in_string, filename),encoding="utf8") as file:
+            data = json.load(file)
+            accepted_values.append(data['accepted'])
+    features_df["accepted"] = accepted_values
+    return features_df
 
 
 def build_and_save_tfidf_model(data_path,data_split_category):
@@ -213,7 +232,8 @@ def build_and_save_tfidf_model(data_path,data_split_category):
     stop_words = stopwords.words('english')
     vectorizer = TfidfVectorizer(analyzer='word', stop_words = stop_words)
     X = vectorizer.fit_transform(corpus)
-    return X
+    feature_names  = vectorizer.get_feature_names()
+    return X,feature_names
 
 def build_affiliation_dictionary(author_university_df,university_score_df):
 
