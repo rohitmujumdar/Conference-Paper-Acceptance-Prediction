@@ -40,7 +40,7 @@ def read_reviews(directory):
           "REVIEWER_CONFIDENCE": [],
           "abstract": review_data["abstract"],
           "result": review_data["accepted"],
-
+          "paper_title": review_data["title"]
       }
       for review in review_data["reviews"]:
         if "MEANINGFUL_COMPARISON" in review:
@@ -67,7 +67,8 @@ def read_reviews(directory):
           "ORIGINALITY": mean(extra_info_dict["ORIGINALITY"]),
           "CLARITY": mean(extra_info_dict["CLARITY"]),
           "RECOMMENDATION": mean(extra_info_dict["RECOMMENDATION"]),
-          "REVIEWER_CONFIDENCE": mean(extra_info_dict["REVIEWER_CONFIDENCE"])
+          "REVIEWER_CONFIDENCE": mean(extra_info_dict["REVIEWER_CONFIDENCE"]),
+          "paper_title": review_data["title"]
       }
       extra_info[filename.replace("json", "pdf")] = extra_info_dict
       list_of_dict.append(temp_dict)
