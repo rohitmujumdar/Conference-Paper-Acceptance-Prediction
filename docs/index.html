@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>Cayman</title>
+  <title>Acceptometer</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#157878">
   <link rel="stylesheet" href="css/normalize.css">
@@ -14,25 +14,116 @@
 <body>
   <section class="page-header">
     <h1 class="project-name">Acceptometer</h1>
-    <h2 class="project-tagline">Will your paper get accepted?</h2>
-    <!-- <a href="#" class="btn">View on GitHub</a>
-      <a href="#" class="btn">Download .zip</a>
-      <a href="#" class="btn">Download .tar.gz</a> -->
+    <h2 class="project-tagline">Helping you get paper your paper accepted?</h2>
   </section>
 
   <p>Will delete: but use this link to learn to format <a href="./original_index.html">HACK</a> File included: original_index.html</p>
   <section class="main-content">
     <h1><a id="user-content-header-1" class="anchor" href="#header-1" aria-hidden="true"><span
           class="octicon octicon-link"></span></a>Introduction</h1>
-    <p>This is a normal paragraph following a header. Bacon ipsum dolor sit amet t-bone doner shank drumstick, pork
-      belly porchetta chuck sausage brisket ham hock rump pig. Chuck kielbasa leberkas, pork bresaola ham hock filet
-      mignon cow shoulder short ribs biltong.</p>
+    <p>Academic research papers have several integral and peripheral aspects apart from the core content such as the authors’ professional affiliations, the number of references or the text readability, to name a few. While the methods and ideas presented in the core content are the most crucial and driving factor for the paper to be accepted by peer reviewers to a conference, it is possible that the aforementioned non-core aspects also influence or contribute to the decision unknowingly. It is possible that the presence of these factors in a certain measure is a subtle indication of a high-quality research paper. For example, it is possible that because the author belongs to one of the topmost universities, she already has a good history of accepted research papers, and her next research paper will have highly innovative ideas articulated well and thus, stand a good chance of acceptance. </p>
+    <p>Our project explores this idea, and aims to assess if these non-core-content factors could play a role in predicting the chances of a paper being accepted to a conference. It must be noted that we do not intend to say that peer-reviewers get biased or make decisions because of the presence of these factors. We hypothesize that research papers, potentially acceptable because of their merit, may have these factors in common.</p>
+    <p>Thus, while our primary motivation is to test a hypothesis, the secondary motivation is to be able to assist academics in the peer reviewing process. While we do not mean to undermine the valuable role peer reviewers play in this process, it must be noted that the process of peer-reviewing has come under scrutiny in the recent years, [5] thanks to loopholes such as lack of qualified reviewers or lack of mechanisms to verify claims of the authors. For example, Walsh et al., 2000) [14] found differences in courtesy between signed and unsigned reviews. (Roberts and Verhoef, 2016) [18] and (Tomkins et al., 2017) [19] found single-blindreviews leading to increased biases towards maleauthors. Langford and Guzdial (2015) [20] pointed to inconsistencies in the peer review process.</p>
+    <p>With the huge volume of papers being churned out in any single area of computing (in 2020 alone, 7737 papers were submitted to the AAAI conference [2]), a tool to perform a preliminary analysis of papers could help highlighting potentially acceptable papers and recommending them to reviewers, thus expediting the process.</p>
 
-    <h1><a id="user-content-header-2" class="anchor" href="#header-2" aria-hidden="true"><span
-        class="octicon octicon-link"></span></a>Methods</h1>
-    <p>This is a normal paragraph following a header. Bacon ipsum dolor sit amet t-bone doner shank drumstick, pork
-    belly porchetta chuck sausage brisket ham hock rump pig. Chuck kielbasa leberkas, pork bresaola ham hock filet
-    mignon cow shoulder short ribs biltong.</p>
+
+    <h3><a id="user-content-header-2" class="anchor" href="#header-2" aria-hidden="true"><span
+        class="octicon octicon-link"></span></a>What people have already done</h3>
+    <p>Kang, et. al. [1] have published the PeerRead dataset where they experimented with Paper Acceptance classification, using 22 coarse features, e.g., length of the title and whether jargon terms such as ‘deep’ and ‘neural’ appear in the abstract, as well as sparse and dense lexical features, with an accuracy of 65.3%</p>
+    <p>[12] builds upon the work by adding and subtracting a few coarse course features and adding Glove and TFIDF embeddings of abstract to lexical features. They predict the acceptance of papers by training on the ICLR 2017 data from PeerRead.   We build on these techniques and add our own to try and improve the results of paper acceptance classification for the ICLR 2017 dataset. We add our own features, experiment with a much wider range of supervised and unsupervised algorithms and introduce attention-based encodings in the lexical features set.  </p>
+
+
+    <h1><a id="user-content-header-3" class="anchor" href="#header-3" aria-hidden="true"><span
+      class="octicon octicon-link"></span></a>Describing the data</h1>
+    <p>We have downloaded and parsed the dataset using PeerReed [1] which is a dataset of scientific peer reviews available to help researchers study this important artifact. The dataset consists of 14.7K paper drafts and the corresponding accept/reject decisions in top-tier venues including ACL, NIPS and ICLR. The dataset also includes 10.7K textual peer reviews written by experts for a subset of the papers.</p>
+    <table>
+      <tr><th>Section</th><th> No of Papers</th><th>No of Reviews</th><th>Ratio of Accepted vs Rejected </th></tr>
+      <tr><td>NIPS 2013–2017</td>
+        <td>2420</td>
+        <td>9152</td>
+        <td>2420/0</td>
+        </tr><tr>
+        <td>ICLR 2017</td>
+        <td>427</td>
+        <td>1304</td>
+        <td>172/255</td>
+        </tr><tr>
+        <td>ACL 2017</td>
+        <td>137</td>
+        <td>275</td>
+        <td>88/49</td>
+        </tr><tr>
+        <td>CoNLL 2016</td>
+        <td>22</td>
+        <td>39</td>
+        <td>11/11</td>
+        </tr><tr>
+        <td>arXiv 2007–2017</td>
+        <td>11778</td>
+        <td>-</td>
+        <td>2891/8887</td>
+        </tr><tr>
+        <td>Total</td>
+        <td>14784</td>
+        <td>10770</td>
+        <td>-</td></tr>
+    </table>
+    <p>Upon closer inspection we found several inconsistencies in the data - for example, not all papers from NIPS or ACL had their accept/reject decisions. Besides, the data for ACL and CoNLL was too less to be used for training a model. That is why, from all the data available, we have focussed our supervised learning work on ICLR 2017 data.   For the papers which didn’t have labels of acceptance, like arXiv were used for unsupervised tasks which didn’t rely on class labels. </p>
+    <p>We receive raw pdfs and their reviews and labels (accept/reject) as our input, transform them into JSON files using science-parse, a library created by the PeerRead authors.</p>
+
+
+    <h3><a id="user-content-header-2" class="anchor" href="#header-2" aria-hidden="true"><span
+      class="octicon octicon-link"></span></a>Characteristics of the Processed Data</h3>
+      <P>We pre-processed 2 types of data: the papers, and the reviews that were left on the paper.</P>
+      <ol>
+        <li><b>Data from Papers</b></li>
+        By parsing the JSONs we constructed the following features based on different parts of the paper (eg. abstract, references) for our supervised learning dataset. The labels were booleans for accepted or rejected decisions.
+        <table style="font-size: 0.7em">
+          <tr><th>Feature</th><th>Construction and Usage.</th><th>Data Type</th><th>  Intuition</th></tr>
+        <tr><td>*words from top 200 title </td> <td>By forming a word cloud of the words of top 200 ranked ICLR 2017 papers and taking most frequent 5% of those words. If the abstract contains atleast 2 words from the mentioned word cloud</td> <td>bool</td> <td>Words from the topmost papers in the recent years denote the current technology trends of that conference </td> </tr><tr> <td>abstract length</td> <td>Word count of the abstract </td> <td>int</td> <td>Good papers have longer or shorter abstracts?</td> </tr><tr> <td>*abstract complexity</td> <td>Average of the Flesch and Dale-Chall readability scores of the abstract. </td> <td>float</td> <td>Abstract readability represents paper complexity. Are good papers challenging to read?</td> </tr><tr> <td>*abstract novelty</td> <td>-</td> <td>Check a</td> <td>Highly innovative or outperforming SOTA papers are potentially acceptable</td> </tr><tr> <td>number of authors</td> <td>JSON Parsing </td> <td>int</td> <td>Does more authors mean a better paper?</td> </tr><tr> <td>*research strength score</td> <td>Use CSRankings to infer authors’ affiliation from their email. Find each author’s uni’s research strength in AI (Geometric Mean count of all papers published in AI) Take average of this research score of all authors</td> <td>float</td> <td>If the author is affiliated to </td> </tr><tr> <td>num of references</td> <td>Count number of papers referenced</td> <td>int</td> <td>More references --> thorough research --> better paper? </td> </tr><tr> <td>most recent ref year</td> <td>The latest year from which a paper was referenced</td> <td>int</td> <td>Does building on the latest research imply good research?</td> </tr><tr> <td>avg len of ref mention</td> <td>Average length of references mentioned</td> <td>float</td> <td>Do the papers you reference have long titles and many authors and does that mean good a paper? </td> </tr><tr> <td>num of recent references</td> <td>Number of recent references since the paper submitted</td> <td>int</td> <td>Does building on the latest research imply good research?</td> </tr><tr> <td>*contains github link</td> <td>Parse JSON for github links of code</td> <td>bool</td> <td>Open source is good! Transparency is good!</td> </tr><tr> <td>contains appendix</td> <td>Parse JSON for Appendixes </td> <td>bool</td> <td>Appendixes usually mean the authors have a lot to say. </td> </tr><tr> <td>number of sections</td> <td>Parse JSON and count number of sections</td> <td>int</td> <td>Do many sections  and lots of figures mean a good paper?</td> </tr><tr> <td>*content complexity</td> <td>Average of the Flesch and Dale-Chall readability scores of the abstract. </td> <td>float</td> <td>Are good papers challenging to read?</td> </tr><tr> <td>number of unique words</td> <td>Diversity of language and terminologies used</td> <td>int</td> <td>What does jargon and good articulation imply?</td> </tr><tr> <td>*feature extraction encoding</td> <td>HuggingFace’s DistilBert encoding of the abstract text</td> <td>768 long vector</td> <td>Incorporating Attention-based embeddings represent a paper.  </td> </tr><tr> <td>tfidf encoding</td> <td>Abstracts of all papers form documents. Represent each abstract as document wrt to to other abstract</td> <td>Vocab size vector</td> <td>How unique is one paper amongst all other submissions</td> </tr>
+          </table>
+
+          For unsupervised learning, clustering used ICLR 2017 data which had data for 349 papers. For topic modelling, all the data from ICLR 2017 + CONLL + ACL and the complete arxiv dataset was used which contained data for 349, 19, 123 and 10,599 papers respectively (11090 papers in total).
+          <br>
+        <li><b>Data from Paper Peer-Reviews</b></li>
+        We parse the JSON to form a data frame of our own which has the following 11 features and number of rows, according to the task as highlighted above.
+        <table style="font-size: 0.7em">
+          <tr><th>Field Name</th><th>Description</th><th>Notes</th></tr>
+          <tr> <td>ID (int)</td> <td>Unique Identifier for each paper</td> <td>Used to join dataframes</td> </tr><tr> <td>Title (string)</td> <td>Title of the paper</td> <td>Used to make sense of results in place of plain ID</td> </tr><tr> <td>Abstract (string) </td> <td>Abstract of the paper </td> <td>Using TF-IDF to process it numerically</td> </tr><tr> <td>Meaningful Comparison (int)</td> <td>Score on a scale of 10 if the paper makes meaningful comparisons.</td> <td>Score is per review so aggregated by taking a mean. Not available for all reviews so not so useful.</td> </tr><tr> <td>Correctness (int)</td> <td>Score for the correctness of the paper as seen by reviewer</td> <td>Score is per review so aggregated by taking a mean. Not available for all reviews so not so useful.</td> </tr><tr> <td>Originality (int)</td> <td>Score for the originality of the paper as seen by reviewer</td> <td>Score is per review so aggregated by taking a mean. Not available for all reviews so not so useful.</td> </tr><tr> <td>Clarity (int)</td> <td>Score for the clarity of the paper as seen by reviewer</td> <td>Score is per review so aggregated by taking a mean. Not available for all reviews so not so useful.</td> </tr><tr> <td>Reviews (list of strings)</td> <td>Actual reviews by each reviewer</td> <td>Using TF-IDF to process it numerically</td> </tr><tr> <td>Recommendation (int)</td> <td>Recommendation a scale of 10 by each reviewer</td> <td>Score is per review so aggregated by taking a mean. Not available for all[5]reviews so not so useful.</td> </tr><tr> <td>Reviewers Confidence (int)</td> <td>Confidence of each reviewer</td> <td>Score is per review so aggregated by taking a mean. Not available for all reviews so not so useful.</td> </tr><tr> <td>Result (boolean)</td> <td>Was paper accepted or rejected</td> <td>Label for learning</td> </tr>        </table>
+          <li>We then also merge/join both the datasets using the common key, which is the paper ID which helps us to do a complete analysis. There is repetitive info in both the data frames which is simply discarded.
+          </li>
+        </ol>
+
+        <p>We believe our approach could solve the problem better due to our design choices, wiser choice of features and extensive experimentation.   Our approach makes use of some wise design choices such as using FAMD (factorial analysis of mixed data) as opposed to PCA, as the dimension reduction method for data described both by quantitative and qualitative variables, or not changing feature-space at all for algorithms like Random Forest. We also use GridSearch and k-fold cross validation to find the right choice of hyperparameters.   Our approach introduces several new features which we believe are more meaningful than some of the ones used in the baseline model. For example, the research strength of authors based on their academic affiliation or the paper readability would make much more difference than, say, just a BOW representation of the abstract. We have discarded such features from the baseline model and engineered all the ones marked with an asterisk completely by ourselves after careful consideration and brainstorming.  </p>
+        <p>The baseline model uses Glove embeddings to encode the abstract. Glove word embeddings are context independent- these models output just one vector for each word, combining all the different senses of the word into one vector. We instead use BERT embeddings, which generate different word embeddings for a word that captures the context of a word. We believe this will help encode better words that contribute uniquely to the abstracts better and capture nuances of the paper that differentiate them from the rest.   Additionally, we also experiment with several separate supervised learning models based solely on TFIDF and BERT embeddings.   The baseline model had no exploratory unsupervised component, whereas we have used several unsupervised methods  </p>
+
+        <h3><a id="user-content-header-3" class="anchor" href="#header-3" aria-hidden="true"><span
+          class="octicon octicon-link"></span></a>Feature analysis</h3>
+        <p>We plot the following correlation matrix after processing our features.
+        Plotting the correlation matrix of our processed features throws up some obvious observations like the high correlation between abstract_length and abstract_complexity (0.97) or  between num_of_references and no_of_recent_references is high (0.76), but also some interesting ones - having an appendix means more unique words?
+       </p>
+       <p><img src="img/1.png" alt="" style="max-width:70%"></a></p>
+        <h1><a id="user-content-header-3" class="anchor" href="#header-3" aria-hidden="true"><span
+      class="octicon octicon-link"></span></a>Results and Discussion</h1>
+
+
+      <h2><a id="user-content-header-3" class="anchor" href="#header-3" aria-hidden="true"><span
+        class="octicon octicon-link"></span></a>1) Supervised</h2>
+        We essentially ran three different kinds of experiments with the feature set, described as follows
+        <ol>
+          <li>All the columns except the BERT and tf-idf encodings of the abstract were considered as the feature vectors of each paper, resulting in 15 features in total</li>
+          <li>Only the BERT encodings of the abstract were considered as feature vectors
+            of each paper, resulting in a 768 dimensional vector for each paper.
+           </li>
+          <li>Only the tf-idf encodings of the abstract were considered as feature vectors of each paper, resulting in a 5616 dimensional vector for each paper.
+          </li>
+        </ol>
+        <p>The data we collected from the website consisted of three sub-modules namely train, validation and test sets. We extracted the necessary features from the three sets individually. To ensure the consistency and equal-distribution of the two classes (accepted and rejected), we merged the validation and the test sets, now called the test set. Now, we have 349 data points in the train set and 77 data points in the test set. Our experiments were evaluated using the classic confusion matrix showing precision, accuracy and recall. We also took into account the F1-score.</p>
+        <p><img src="img/2.png" alt="" style="max-width:70%"></a></p>
+
+        <h3><a id="user-content-header-3" class="anchor" href="#header-3" aria-hidden="true"><span
+          class="octicon octicon-link"></span></a>Description of Experiments with Normal-Single Valued Features</h3>
+          <p>In this set-up, the BERT encodings and the tf-idf encodings columns of the dataset were dropped, which left us with 15 features for each paper sample, in both the train and the test datasets.</p>
 
     <h1><a id="user-content-header-3" class="anchor" href="#header-3" aria-hidden="true"><span
       class="octicon octicon-link"></span></a>Results</h1>
@@ -40,11 +131,32 @@
   belly porchetta chuck sausage brisket ham hock rump pig. Chuck kielbasa leberkas, pork bresaola ham hock filet
   mignon cow shoulder short ribs biltong.</p>
 
+
   <h1><a id="user-content-header-4" class="anchor" href="#header-4" aria-hidden="true"><span
-    class="octicon octicon-link"></span></a>Discussion</h1>
-  <p>This is a normal paragraph following a header. Bacon ipsum dolor sit amet t-bone doner shank drumstick, pork
-belly porchetta chuck sausage brisket ham hock rump pig. Chuck kielbasa leberkas, pork bresaola ham hock filet
-mignon cow shoulder short ribs biltong.</p>
+    class="octicon octicon-link"></span></a>References</h1>
+  <ul>
+    <li>[1] D. Kang, W. Ammar, B. Dalvi, M. van Zuylen, S. Kohlmeier, E. H. Hovy, and R. Schwartz, “A Dataset of Peer Reviews (PeerRead): Collection, Insights and NLP Applications,” CoRR, vol. abs/1804.09635, 2018.</li>
+    <li>[2] lixin4ever, “Statistics of acceptance rate for the main AI conferences,” 12 2018. </li>
+    <li>[3] Y. Dong, R. A. Johnson, and N. V. Chawla, “Can Scientiﬁc Impact Be Predicted?,” IEEE Transactions on Big Data, vol. 2, pp. 18–30, 2016. </li>
+    <li>[4] D. McNamara, P. Wong, P. Christen, and K. S. Ng, “Predicting High Impact Academic Papers Using Citation Network Features,” in Trends and  Applications in Knowledge Discovery and Data Mining, (Berlin, Heidelberg),</li>
+    pp. 14–25, Springer Berlin Heidelberg, 2013.</li>
+    <li>[5] “CVPR Paper Controversy; ML Community Reviews Peer Review,” Medium, Oct 2018. </li>
+    <li>[6] Xie, Jianjun. (2016). Predicting Institution-Level Paper Acceptance at Conferences: A Time-Series Regression Approach. </li>
+    <li>[7] Recurrent Neural Network for Acceptance Acceptance https://mc.ai/recurrent-neural-network-for-prediction-acceptance[Online] </li>
+    <li>[8] J.-B. Huang, “Deep Paper Gestalt,” 12 2018. </li>
+    <li>[10] C. von Bearnensquash. Paper gestalt. In Secret Proceedings of Computer Vision and Pattern Recognition, 2010. 1, 2, 4. </li>
+    <li>[11] Qian, Yujie & Dong, Yinpeng & Ma, Ye & Jin, Hailong & Li, Juanzi. (2016). Feature Engineering and Ensemble Modeling for Paper Acceptance Rank  Prediction.</li>
+    <li>[12] M. C. William Jen, Shichang Zhang, “Predicting Conference Paper Acceptance,” 12 2018. </li>
+    <li>[14] E. Walsh, Michael W Rooney, Louis Appleby, and Greg Wilkinson. 2000. Open peer review: a ran-domised controlled trial.The British journal of  psy-chiatry : the journal of mental science176:47–51.</li>
+    <li>[15] Aliaksandr Birukou, Joseph R. Wakeling, Claudio Bar-tolini, Fabio Casati, Maurizio Marchese, KatsiarynaMirylenka, Nardine Osman, Azzurra Ragone,  Car-les Sierra, and Aalam Wassef. 2011. Alternatives topeer review: Novel approaches for research evalua-tion. InFront. Comput. Neurosci.</li>
+    <li>[16] Azzurra Ragone, Katsiaryna Mirylenka, Fabio Casati,and Maurizio Marchese. 2011. A quantitative analy-sis of peer review. InProc. of ISSI. </li>
+    <li>[17] Drummond Rennie. 2016. Make peer review scien-tific: thirty years on from the first congress on peerreview, drummond rennie reflects on the  improve-ments brought about by research into the process–and calls for more.Nature535(7610):31–34.</li>
+    <li>[18] Seán G Roberts and Tessa Verhoef. 2016.Double-blind reviewing at evolang 11 reveals gender bias.Journal of Language Evolution1(2):163–167. </li>
+    <li>[19] Andrew Tomkins, Min Zhang, and William D Heavlin.2017. Single versus double blind reviewing at wsdm2017. ArXiv:1702.00502. </li>
+    <li>[20] Claire Le Goues, Yuriy Brun, Sven Apel, EmeryBerger, Sarfraz Khurshid, and Yannis Smaragdakis.2017.Effectiveness of anonymization in double-blind  review. ArXiv:1709.01609.</li>
+    <li>[21] https://github.com/huggingface/transformers </li>
+  </ul>
+
 
 
 
