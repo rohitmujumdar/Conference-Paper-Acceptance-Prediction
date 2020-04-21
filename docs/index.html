@@ -16,7 +16,7 @@
     <h1> CS 7641 - Machine Learning </h1>
     <h1 class="project-name">Conference Paper Acceptance Prediction</h1>
     <h2 class="project-name">Acceptometer</h2>
-    <h4> Arthita Ghosh, Neha Pande, Rohan Goel, Rohit Mujumdar and Sai Shravani Sistla </h4>
+    <h2> Arthita Ghosh, Neha Pande, Rohan Goel, Rohit Mujumdar and Sai Shravani Sistla </h2>
     <h4> https://github.com/rohangoel96/Acceptometer </h4>
   </section>
 
@@ -91,7 +91,7 @@
         <table style="font-size: 0.7em">
           <tr><th>Field Name</th><th>Description</th><th>Notes</th></tr>
           <tr> <td>ID (int)</td> <td>Unique Identifier for each paper</td> <td>Used to join dataframes</td> </tr><tr> <td>Title (string)</td> <td>Title of the paper</td> <td>Used to make sense of results in place of plain ID</td> </tr><tr> <td>Abstract (string) </td> <td>Abstract of the paper </td> <td>Using TF-IDF to process it numerically</td> </tr><tr> <td>Meaningful Comparison (int)</td> <td>Score on a scale of 10 if the paper makes meaningful comparisons.</td> <td>Score is per review so aggregated by taking a mean. Not available for all reviews so not so useful.</td> </tr><tr> <td>Correctness (int)</td> <td>Score for the correctness of the paper as seen by reviewer</td> <td>Score is per review so aggregated by taking a mean. Not available for all reviews so not so useful.</td> </tr><tr> <td>Originality (int)</td> <td>Score for the originality of the paper as seen by reviewer</td> <td>Score is per review so aggregated by taking a mean. Not available for all reviews so not so useful.</td> </tr><tr> <td>Clarity (int)</td> <td>Score for the clarity of the paper as seen by reviewer</td> <td>Score is per review so aggregated by taking a mean. Not available for all reviews so not so useful.</td> </tr><tr> <td>Reviews (list of strings)</td> <td>Actual reviews by each reviewer</td> <td>Using TF-IDF to process it numerically</td> </tr><tr> <td>Recommendation (int)</td> <td>Recommendation a scale of 10 by each reviewer</td> <td>Score is per review so aggregated by taking a mean. Not available for all[5]reviews so not so useful.</td> </tr><tr> <td>Reviewers Confidence (int)</td> <td>Confidence of each reviewer</td> <td>Score is per review so aggregated by taking a mean. Not available for all reviews so not so useful.</td> </tr><tr> <td>Result (boolean)</td> <td>Was paper accepted or rejected</td> <td>Label for learning</td> </tr>        </table>
-          
+
           <br>
           We then also merge/join both the datasets using the common key, which is the paper ID which helps us to do a complete analysis. There is repetitive info in both the data frames which is simply discarded.
 
@@ -104,7 +104,7 @@
           class="octicon octicon-link"></span></a>3.3 Feature analysis</h3>
 
         We plot the following correlation matrix after processing our features. Plotting the correlation matrix of our processed features throws up some obvious observations like the high correlation between abstract_length and abstract_complexity (0.97) or  between num_of_references and no_of_recent_references is high (0.76), but also some interesting ones - having an appendix means more unique words?
-       
+
         <h2><a id="user-content-header-3" class="anchor" href="#header-3" aria-hidden="true"><span
       class="octicon octicon-link"></span></a>4. Results and Discussion</h2>
       <h3><a id="user-content-header-3" class="anchor" href="#header-3" aria-hidden="true"><span
@@ -439,6 +439,12 @@
         <td>0.62</td>
         <td>0.56</td>
         <td>0.61</td>
+        </tr><tr>
+        <td>Random Forest (without FAMD)</td>
+        <td>0.65</td>
+        <td>0.66</td>
+        <td>0.65</td>
+        </tr><tr>
         </tr><tr>
         <td>Adaboost</td>
         <td>0.58</td>
@@ -808,7 +814,7 @@
         class="octicon octicon-link"></span></a>4.2.2.2 [TF-IDF Encoding] Gaussian Mixture Model </h5>
       <p>We have further used the bayesian gaussian mixture model to cluster the tf-idf vectors of the paper abstracts and most of the clusters we get are similar with the exception of one cluster (Cluster 3) which has been able to capture the word convolutional neural network as an important keyword in some category of papers.
 </p>
-        
+
         <h4><a id="user-content-header-3" class="anchor" href="#header-3" aria-hidden="true"><span
         class="octicon octicon-link"></span></a>4.2.3 Comparing TF-IDF and BERT</h4>
   <p>One instant thing which we observed is that BERT is comparatively time-consuming than TF-IDF, thus giving TF-IDF the edge in time sensitive matters. Also, Bert is typically used for sentence embeddings and for sentences with strong syntactic patterns. On the other hand, TF-IDF is useful for finding patterns in words. Since there is no ground truth available and because of the fact that a single paper can span multiple “topics”, comparing the data on our results is very subjective. However if we look closely, one can observe that the different papers inside one cluster in the BERT approach, seem to be more coherent.</p>
