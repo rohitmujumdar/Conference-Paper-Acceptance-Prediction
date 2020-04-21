@@ -106,7 +106,7 @@
         We plot the following correlation matrix after processing our features. Plotting the correlation matrix of our processed features throws up some obvious observations like the high correlation between abstract_length and abstract_complexity (0.97) or  between num_of_references and no_of_recent_references is high (0.76), but also some interesting ones - having an appendix means more unique words?
 
         <h2><a id="user-content-header-3" class="anchor" href="#header-3" aria-hidden="true"><span
-      class="octicon octicon-link"></span></a>4. Results and Discussion</h2>
+      class="octicon octicon-link"></span></a>4. Experiments and Results</h2>
       <h3><a id="user-content-header-3" class="anchor" href="#header-3" aria-hidden="true"><span
         class="octicon octicon-link"></span></a>4.1 Supervised</h3>
         We essentially ran three different kinds of experiments with the feature set, described as follows
@@ -836,7 +836,7 @@ On the other hand, the word cloud from comments of rejected papers focus on word
 </p>
 
     <h2><a id="user-content-header-3" class="anchor" href="#header-3" aria-hidden="true"><span
-      class="octicon octicon-link"></span></a>Conclusion</h2>
+      class="octicon octicon-link"></span></a>5. Discussion and Conclusion</h2>
     <p>We tried 14 supervised learning models and 5  unsupervised. Our overall accuracy is ~65 which is not very higher than that of the baseline in PeerRead. While the baseline model algorithms are not known, our Random Forest model without dimension reduction gave the best accuracy, which shows that the feature engineering we performed especially by adding our own new features definitely helped.  It is possible that our model did not show a significant improvement on the baseline because of the small amount of data available to train and test on (only 349 and 77 data points respectively).</p>
     <p>Our primary goal was to test the hypothesis that non-core content factors of a research paper could indicate the potentiality of its acceptance. As such, the accuracy and results we got do not indicate that our hypothesis holds. We need much more training and testing data for the results to start showing a pattern, so that the hypothesis can be proved or disproved. Our experiments were conducted for a particular year of only one conference. Therefore, extrapolating the results to generalise any claim would be incorrect.
 While we did have data on multiple conferences, it was fairly incomplete especially in terms of lack of labels. If a huge amount of complete, consistent data for multiple conferences becomes available, we could train our models on that and further test our hypothesis. Thus, scaling widely across conferences and years could help build a strong prediction model.
