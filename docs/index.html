@@ -130,6 +130,660 @@
           <p>In this set-up, the BERT encodings and the tf-idf encodings columns of the dataset were dropped, which left us with 15 features for each paper sample, in both the train and the test datasets.</p>
 
 
+p>Without FAMD - To begin with, we implemented a Random Forest to study the features and their importances. In this case, the dimensionality dataset wasn’t reduced and all the 15 features were intact. Bootstrapping was set to True. The hyper-parameters we used are: </p>
+<ul>
+<li>N_estimators : Number of trees in the forest. Range - [50, 80, 100, 120, 180, 300, 500, 800, 1200] </li>
+<li>Max_depth - The maximum depth the tree can be built upto, Range - [5, 8, 15, 25, 30] </li>
+<li>Min_samples_split - The minimum number of samples required to split at a node while building the tree. Range - [2, 5, 10, 15, 100] </li>
+<li>Min_samples_leaf - The minimum samples required at a leaf node.  </li>
+<li>Range - [1, 2, 5, 10] </li>
+</ul>
+
+<div style="float:left">The best parameters and results obtained were: 
+<table>
+      <tr><th>Parameter Name</th><th> Parameter Value</th></tr>
+      <tr><td>N_estimators</td>
+        <td>100</td>
+        </tr><tr>
+        <td>Max_depth</td>
+        <td>5</td>
+        </tr><tr>
+    <td>Min_Samples_split</td>
+        <td>5</td>
+        </tr><tr>
+        <td>Min_Samples_leaf</td>
+        <td>5</td>
+        </tr><tr>
+        <td>Validation accuracy</td>
+        <td>67.03%</td>
+        </tr>       
+</table>
+</div>
+<div style="float:right">
+<p> The confusion matrix on the test-set was:</p>
+<table>
+      <tr><th></th><th colspan="2">Prediction Values</th></tr>
+      <tr><td>Actual</td>
+        <td>0</td>
+        <td>1</td>
+        </tr><tr>
+        <td>0</td>
+        <td>39 (TN)</td>
+        <td>5 (FP)</td>
+        </tr><tr>
+    <td>1</td>
+        <td>22 (FN)</td>
+        <td>11 (TP)</td>
+        </tr>      
+</table>
+</div><br><br><br><br><br><br>
+<div style="float:left">
+<img src="img/11.png" alt="" class="center" style="max-width:40%; max-height: 40%;"></a></div>
+<div style="float:right">
+<p> One of the trees in the Random Forest is visualized above. We have randomly picked up some trees from the forest and visualised their feature importances. We observe that the difference in feature importances of different trees is because of bootstrapping technique. The repeated sampling results in some datasets being formed from a small representation of the original dataset. Depending on the sampled dataset, only some features will extract their respective importance. It is interesting to observe that some of our assumptions used while feature engineering are perhaps holding - having words from titles of topmost papers makes a difference to the paper decision or a github link points to an open source paper which could probably mean good research work! </p>
+</div>
+<img src="img/12.png" alt="" style="max-width:30%;"></a>
+<img src="img/13.png" alt="" style="max-width:30%;"></a>
+<img src="img/14.png" alt="" style="max-width:30%;"></a>
+<div>
+<p> Implementation of PCA </p>
+<p> Our dataset had both numeric and categorical variables. Thus, we considered a PCA implementation for a mixed-feature dataset. The number of components in the reduced dataset was determined by the percentage of retained variance. A threshold of 95% retained variance was applied which gave us 11 components. PCA was fit on train data and the test set was accordingly transformed.</p>
+<p> The below graph plots the proportion of variance to the number of principal components. It can be seen that the variance recovered increases as the number of principal components increases. </p>
+</div>
+<p><img src="img/15.png" alt="" style="max-width:40%; max-height: 40%"></a></p>
+<p> For each of the supervised algorithms, following steps were followed. </p>
+<p><img src="img/16.png" alt="" style="max-width:40%; max-height: 40%"></a></p>
+<p> The Supervised learning algorithms experimented with in this set-up are: </p>
+<p> For all the experiments, the other hyperparameters except the ones mentioned were set to their default values. </p>
+<ol>
+<li> Logistic Regression </li>
+<p> Since our final output labels are 0 and 1, we tried logistic regression to see how this algorithm performs. The hyper-parameters are:</p>
+<ol>
+  <li> Penalty: This parameter decides the type of regularisation added to the residual sum of squares to determine the loss function. Different values used for penalty are L2, L1 regularisation, elastic net (linear combination of L2 and L1) </li>
+  <li> C : Inverse of regularization strength. Smaller values of C specify stronger regularization. A range of 1 to 100 was taken </li>
+  <li> Fit_intercept : The boolean value which determines if an intercept term has to be fit in the equation between the predictor and the output variables </li>
+</ol>
+<p> The algorithm was run for 200 iterations with the liblinear solver. The best parameters and results obtained were: </p>
+<p> For the best set of parameters, the trends in validation accuracy was observed for a particular hyper-parameter, keeping the other hyper-parameters constant. </p>
+<img src="img/17.png" alt="" style="max-height:50%; max-width:55%; float: left">
+<img src="img/18.png" alt="" style="max-width:50%; max-width:55%; float: right">
+<br><br><br><br><br><br><br><br> <br><br>
+<p> We can see that in the figure above (on the left) that there is only a slight variation in the values for l1 and l2 norms. </p>
+<p> In the figure above (on the right) validation accuracy fluctuates with the value of C initially but remains constant after a specific value (around 20) is achieved. It can be inferred that, after this specific value, regularisation isn’t helping the data from avoiding over-fitting. </p>
+
+<p> The confusion matrix on the test-set was </p>
+<table>
+      <tr><th></th><th colspan="2">Prediction Values</th></tr>
+      <tr><td>Actual</td>
+        <td>0</td>
+        <td>1</td>
+        </tr><tr>
+        <td>0</td>
+        <td>42 (TN)</td>
+        <td>2 (FP)</td>
+        </tr><tr>
+    <td>1</td>
+        <td>37 (FN)</td>
+        <td>2 (TP)</td>
+        </tr>      
+</table>
+<p> Observations : The value of False negatives is very high which reduced the value of true positives significantly. </p>
+<li> Support Vector Machine</li>
+<p> The hyper-parameters are: </p>
+<ol>
+  <li> Kernel - The type of kernel used in the algorithm. This is the function which transforms the input data into a high dimensional space and calculates the support vectors. Values taken - (rbf, poly, sigmoid) </li>
+  <li> C - Regularization parameter. The strength of the regularization is inversely proportional to C. The penalty is a squared l2 penalty. Range taken - (1,100) </li>
+  <li> Gamma - Kernel coefficient. Range taken - (1e-4,1e-2,0.0002) </li>
+</ol>
+<p> The formula of RBF kernel with coefficient gamma is given by,
+<img src="img/19.png" alt="" style="max-width:70%; max-height:70%; float:right"></a></p>
+<div style="float:left">
+<table>
+      <tr><th>Parameter Name</th><th> Parameter Value</th></tr>
+      <tr><td>Kernel</td>
+        <td>rbf</td>
+        </tr><tr>
+        <td>C</td>
+        <td>50</td>
+        </tr><tr>
+    <td>Gamma</td>
+        <td>0.0047</td>
+        </tr><tr>
+        <td>Validation accuracy</td>
+        <td>65.03%</td>
+        </tr>       
+</table></div>
+<br><br><br><br><br><br><br><br><br><br>
+<p> The best parameters and results obtained are present in table above </p>
+<p> For the best set of parameters, the trends in validation accuracy was observed for a particular hyper-parameter, keeping the other hyper-parameters constant. </p>
+<p><img src="img/20.png" alt="" style="max-width:70%; float: left"></a></p>
+<p><img src="img/21.png" alt="" style="max-width:70%; float: right"></a></p>
+<br><br><br><br><br><br><br><br><br><br>
+<p> For different kinds of kernels used to compute the distance between two vectors, rbf kernel clearly showed a higher value of validation accuracy for a fixed value of C and gamma. </p>
+<p> The regularisation parameter for L2 penalty, increases the val accuracy upto a certain value. However, the accuracy decreases after the peak value of 50. </p>
+<p><img src="img/22.png" alt="" style="max-width:70%; float: left"></a></p>
+<div style="float:right">
+<table>
+      <tr><th></th><th colspan="2">Prediction Values</th></tr>
+      <tr><td>Actual</td>
+        <td>0</td>
+        <td>1</td>
+        </tr><tr>
+        <td>0</td>
+        <td>43 (TN)</td>
+        <td>1 (FP)</td>
+        </tr><tr>
+    <td>1</td>
+        <td>31 (FN)</td>
+        <td>2 (TP)</td>
+        </tr>      
+</table></div>
+<br><br><br><br><br><br><br><br><br><br>
+<p> In the figure above, it can be seen that the accuracy value increases steeply in the beginning but fluctuates in the middle. However, the trend is always increasing and reaches a maximum at the best value of the parameter. </p>
+<p> The confusion matrix on the test-set is also illustrated as the table above.</p>
+<p> Observations : The value of False negatives is very high which reduced the value of true positives significantly. (Similar to logistic regression) </p>
+<li> Random Forest</li>
+<p> The hyper-parameters are: </p>
+<ol>
+<li> N_estimators : Number of trees in the forest. Range - [50, 80, 100, 120, 180, 300, 500, 800, 1200] </li>
+<li> Max_depth - The maximum depth the tree can be built upto, Range - [5, 8, 15, 25, 30] </li>
+<li> Min_samples_split - The minimum number of samples required to split at a node while building the tree. Range - [2, 5, 10, 15, 100] </li>
+<li> Min_samples_leaf - The minimum samples required at a leaf node. Range - [1, 2, 5, 10] </li>
+</ol>
+<p> Bootstrapping was set to True. The best parameters and results obtained were: </p>
+<div style="float:left">
+<table>
+      <tr><th>Parameter Name</th><th> Parameter Value</th></tr>
+      <tr><td>N_estimators</td>
+        <td>180</td>
+        </tr><tr>
+        <td>Max_depth</td>
+        <td>5</td>
+        </tr><tr>
+    <td>Min_Samples_split</td>
+        <td>5</td>
+        </tr><tr>
+        <td>Min_Samples_leaf</td>
+        <td>2</td>
+        </tr><tr>
+        <td>Validation accuracy</td>
+        <td>65.63%</td>
+        </tr>       
+</table></div>
+<img src="img/23.png" alt="" style="max-width:40%; float: right"></a>
+<br><br><br><br><br><br><br><br><br><br>
+<p> For the best set of parameters, the trends in validation accuracy was observed for a particular hyper-parameter, keeping the other hyper-parameters constant.</p>
+<p> The general norm is that the number of estimators will not reduce the validation accuracy, but after a certain number, the validation accuracy doesn’t change. We have observed a different trend in our case. It can be attributed to inherit properties of the dataset and other parameters. </p>
+<p><img src="img/24.png" alt="" style="max-width:50%; float: left"></a></p>
+<p><img src="img/25.png" alt="" style="max-width:50%; float: right"></a></p>
+<br><br><br><br><br><br><br><br><br><br>
+<p> As we increase the depth of the tree, overfitting increases and validation accuracy decreases. We see that the maximum value of val accuracy is obtained at max_depth=5 (low value)</p>
+<p> Irregular trends were observed in the above two graphs. The exact relation between the number of samples in the leaf nodes and the validation accuracy didn’t follow a consistent trend. It varied heavily. The confusion matrix on the test-set obtained is given below. </p>
+<div style="float:left">
+<table>
+      <tr><th></th><th colspan="2">Prediction Values</th></tr>
+      <tr><td>Actual</td>
+        <td>0</td>
+        <td>1</td>
+        </tr><tr>
+        <td>0</td>
+        <td>39 (TN)</td>
+        <td>5 (FP)</td>
+        </tr><tr>
+    <td>1</td>
+        <td>22 (FN)</td>
+        <td>11 (TP)</td>
+        </tr>      
+</table></div>
+<img src="img/26.png" alt="" style="max-width:50%; float: right"></a>
+<br><br><br><br><br><br><br><br>
+<p> From the above matrix, we observed that random forest did a better job compared to the other two algos in reducing the number of false positives and increasing the true positives by a significant amount. </p>
+<li> Adaboost </li>
+<p> The base estimator for this boosting method was considered to be a Decision tree with a max_Depth =1 to reduce overfitting. The hyper-parameters are: </p>
+<ol>
+<li> N_estimators - The number of trees until the end of the boosting algo. Range - [50, 100, 250, 500]</li>
+<li> Learning rate - Learning rate shrinks the contribution of each classifier by learning_rate. Range - [1e-4, 1e-3, 1e-2, 1e-1, 1] </li>
+</ol>
+<p> The best parameters and results obtained are given in table below. </p> 
+<div style="float:left">
+<table>
+      <tr><th>Parameter Name</th><th> Parameter Value</th></tr>
+      <tr><td>N_estimators</td>
+        <td>250</td>
+        </tr><tr>
+        <td>Learning_rate</td>
+        <td>0.01</td>
+        </tr><tr>
+        <td>Validation accuracy</td>
+        <td>67.72%</td>
+        </tr>       
+</table></div>
+<img src="img/27.png" alt="" style="max-width:50%; max-height:45%; float: right"></a>
+<br><br><br><br><br><br>
+<p> For the best set of parameters, the trends in validation accuracy was observed for a particular hyper-parameter, keeping the other hyper-parameters constant. </p>
+<p> The accuracy increased with the number of estimators and it reduced after reaching a peak value. </p>
+<p><img src="img/28.png" alt="" style="max-width:70%; float: left"></a></p>
+<div style="float:right">
+<table>
+      <tr><th></th><th colspan="2">Prediction Values</th></tr>
+      <tr><td>Actual</td>
+        <td>0</td>
+        <td>1</td>
+        </tr><tr>
+        <td>0</td>
+        <td>39 (TN)</td>
+        <td>5 (FP)</td>
+        </tr><tr>
+    <td>1</td>
+        <td>27 (FN)</td>
+        <td>6 (TP)</td>
+        </tr>      
+</table></div><br><br><br><br><br><br><br><br><br><br>
+<p> We observe that the validation accuracy doesn’t change with learning rate(lr) for lower values of lr. However, it reaches a peak and drops after a specific value. </p>
+<p> The confusion matrix on the test-set is given above. </p>
+<p> From the above matrix, we observed that the boosting algorithm was not very successful in reducing the false negatives, which appears to be a problem for future experimentation. </p>
+<li> XGBoost </li>
+<p> The hyper-parameters are: </p>
+<ol> 
+<li> ETA - Step size shrinkage used in updates to prevent overfitting. After each boosting step, we can directly get the weights of new features, and eta shrinks the feature weights to make the boosting process more conservative.  Range - [1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1] </li>
+<li> Gamma - Minimum loss reduction required to make a further partition on a leaf node of the tree. Range - [1, 10, 100] </li>
+<li> Alpha - L1 regularization term on weights. Range - [1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1] </li>
+<li> Reg_lambda - L2 regularization term on weights. Range - [1e-1, 1, 10, 100] </li> 
+</ol>
+<p> The best parameters and results obtained are given below. </p>
+<div style="float:left">
+<table>
+      <tr><th>Parameter Name</th><th> Parameter Value</th></tr>
+      <tr><td>ETA</td>
+        <td>1e-05</td>
+        </tr><tr>
+        <td>Gamma</td>
+        <td>10</td>
+        </tr><tr>
+        <td>Alpha</td>
+        <td>1e-05</td>
+        </tr><tr>
+        <td>Reg_lambda</td>
+        <td>1</td>
+        </tr><tr>
+        <td>Validation accuracy</td>
+        <td>65.25%</td>
+        </tr>       
+</table></div>
+<img src="img/29.png" alt="" style="max-width:70%; float: right"></a><br><br><br><br><br><br><br><br><br><br>
+<p> For the best set of parameters, the trends in validation accuracy was observed for a particular hyper-parameter, keeping the other hyper-parameters constant. </p>
+<p><img src="img/30.png" alt="" style="max-width:70%; float: left"></a></p>
+<p><img src="img/31.png" alt="" style="max-width:70%; float: right"></a></p><br><br><br><br><br><br><br><br><br><br><br>
+<p> This is an interesting observation. The learning rate did not have any impact in determining the accuracy. </p>
+<p> The regularisation parameters, alpha - for L1, didn’t affect the accuracy in any way. From this observation, it can be inferred that L1 regularisation didn’t help the model reduce overfitting.
+However, Lambda - for L2, didn’t affect the accuracy for smaller values, rose to a peak and fell steeply. For our dataset, L1 regularisation was impactless in the boosting algorithm. </p>
+<p> The confusion matrix on the test-set is given below. </p>
+<table>
+      <tr><th></th><th colspan="2">Prediction Values</th></tr>
+      <tr><td>Actual</td>
+        <td>0</td>
+        <td>1</td>
+        </tr><tr>
+        <td>0</td>
+        <td>38 (TN)</td>
+        <td>6 (FP)</td>
+        </tr><tr>
+    <td>1</td>
+        <td>26 (FN)</td>
+        <td>7 (TP)</td>
+        </tr>      
+</table>
+<p> The results were similar to that of the adaboost case. The metrics we evaluated our methods (test set) included test accuracy, precision and recall. </p>
+<table>
+      <tr><th>Model</th><th>Test Accuracy</th><th>Precision</th><th>Recall</th></tr>
+      <tr><td>Logistic Regression</td>
+        <td>0.57</td>
+        <td>0.54</td>
+        <td>0.57</td>
+        </tr><tr>
+        <td>SVM</td>
+        <td>0.59</td>
+        <td>0.62</td>
+        <td>0.58</td>
+        </tr><tr>
+        <td>Random Forest</td>
+        <td>0.62</td>
+        <td>0.56</td>
+        <td>0.61</td>
+        </tr><tr>
+        <td>Adaboost</td>
+        <td>0.58</td>
+        <td>0.57</td>
+        <td>0.53</td>
+        </tr><tr>
+        <td>XGBoost</td>
+        <td>0.58</td>
+        <td>0.57</td>
+        <td>0.54</td>
+        </tr>       
+</table>
+</ol>
+
+<h3><a id="user-content-header-3" class="anchor" href="#header-3" aria-hidden="true"><span
+          class="octicon octicon-link"></span></a>Description of Experiments with BERT Features</h3>
+<p>In this setup, the DistilBert encodings of the abstract were considered. DistilBert was developed by HuggingFace by leveraging knowledge distillation during the pre-training phase. We use DistilBert as it reduces the size of a BERT model by 40%, while retaining 97% of its language understanding capabilities and being 60% faster. [21]. Each abstract encoding is a 768 element long vector. </p>
+<p> PCA was implemented on the data reducing the feature space to 134 components which retained 95% variance. Each classifier was fitted on the training data and hyperparameter tuning was done on a 10-fold cross validation set for SVM and 3-fold for the rest. </p>
+<p> Naive Baye’s could not be implemented on BERT as the features have negative values. 
+Implementing SVM was a good idea since it is effective when the number of dimensions is high. </p>
+<ol>
+<li>SVM</li>
+<p>The best parameters and results obtained were: </p>
+<div style="float:left">
+<table>
+      <tr><th>Parameter Name</th><th> Parameter Value</th></tr>
+      <tr><td>Kernel</td>
+        <td>poly</td>
+        </tr><tr>
+        <td>Gamma</td>
+        <td>0.0041</td>
+        </tr><tr>
+        <td>C</td>
+        <td>1</td>
+        </tr><tr>
+        <td>Validation accuracy</td>
+        <td>60.47%</td>
+        </tr>       
+</table></div>
+<div style="float:right">
+<table>
+      <tr><th></th><th colspan="2">Prediction Values</th></tr>
+      <tr><td>Actual</td>
+        <td>0</td>
+        <td>1</td>
+        </tr><tr>
+        <td>0</td>
+        <td>41 (TN)</td>
+        <td>3 (FP)</td>
+        </tr><tr>
+    <td>1</td>
+        <td>28 (FN)</td>
+        <td>5 (TP)</td>
+        </tr>      
+</table></div>
+<br><br><br><br><br><br><br><br>
+<p>The confusion matrix on the test data is given above.</p>
+<li> Random Forest </li>
+<p>The best parameters and results obtained were: </p>
+<div style="float:left">
+<table>
+      <tr><th>Parameter Name</th><th> Parameter Value</th></tr>
+      <tr><td>n_estimators</td>
+        <td>50</td>
+        </tr><tr>
+        <td>max_depth</td>
+        <td>25</td>
+        </tr><tr>
+        <td>min_samples_split</td>
+        <td>15</td>
+        </tr><tr>
+        <td>min_samples_leaf</td>
+        <td>5</td>
+        </tr><tr>
+        <td>Validation accuracy</td>
+        <td>62.47%</td>
+        </tr>       
+</table></div>
+<div style="float:right">
+<table>
+      <tr><th></th><th colspan="2">Prediction Values</th></tr>
+      <tr><td>Actual</td>
+        <td>0</td>
+        <td>1</td>
+        </tr><tr>
+        <td>0</td>
+        <td>42 (TN)</td>
+        <td>2 (FP)</td>
+        </tr><tr>
+    <td>1</td>
+        <td>28 (FN)</td>
+        <td>5 (TP)</td>
+        </tr>      
+</table></div><br><br><br><br><br><br><br><br><br><br>
+<p>RF performs the best amongst all algos for BERT. The confusion matrix on the test data is given above.</p>
+<li> Logistic Regression </li>
+<p> In our experiment, we have set the solver as 'liblinear' and max iterations as 700. The best parameters and results obtained were: </p>
+<div style="float:left">
+<table>
+      <tr><th>Parameter Name</th><th> Parameter Value</th></tr>
+      <tr><td>Penalty</td>
+        <td>l1</td>
+        </tr><tr>
+        <td>C</td>
+        <td>43</td>
+        </tr><tr>
+        <td>fit_intercept</td>
+        <td>True</td>
+        </tr><tr>
+        <td>class_weight</td>
+        <td>None</td>
+        </tr><tr>
+        <td>Validation accuracy</td>
+        <td>56.44%</td>
+        </tr>       
+</table></div>
+<div style="float:right">
+<table>
+      <tr><th></th><th colspan="2">Prediction Values</th></tr>
+      <tr><td>Actual</td>
+        <td>0</td>
+        <td>1</td>
+        </tr><tr>
+        <td>0</td>
+        <td>23 (TN)</td>
+        <td>21 (FP)</td>
+        </tr><tr>
+    <td>1</td>
+        <td>20 (FN)</td>
+        <td>13 (TP)</td>
+        </tr>      
+</table></div><br><br><br><br><br><br><br><br><br><br>
+<p> The validation accuracy for logistic regression is lower than the rest of the algorithms used. The confusion matrix on the test data: </p>
+<p> The metrics we evaluated our methods (test set) included test accuracy, precision and recall. </p>
+<table>
+      <tr><th>Model</th><th>Test Accuracy</th><th>Precision</th><th>Recall</th></tr>
+      <tr><td>SVM</td>
+        <td>0.60</td>
+        <td>0.61</td>
+        <td>0.60</td>
+        </tr><tr>
+        <td>Random Forest</td>
+        <td>0.61</td>
+        <td>0.65</td>
+        <td>0.61</td>
+        </tr><tr>
+        <td>Logistic Regression</td>
+        <td>0.47</td>
+        <td>0.47</td>
+        <td>0.47</td>
+        </tr>       
+</table>
+<p> Thus we see while RF performs the best on bert, LR gives a more balanced confusion matrix. All algorithms do a poor job of predicting the true positives. </p>
+</ol>
+
+<h3><a id="user-content-header-3" class="anchor" href="#header-3" aria-hidden="true"><span
+          class="octicon octicon-link"></span></a>Description of Experiments with TF-IDF Features</h3>
+<p>In this setup, only the tf-idf encodings of the abstract were considered. There were 6230 features in both train and test dataset. </p>
+<p>PCA was implemented on the data reducing the feature space to 265 components which retained 85% variance. Each classifier was fitted on the training data and hyperparameter tuning was done on a 10-fold cross validation set. </p>
+<p>Following supervised learning algorithms were implemented: </p>
+<ol>
+<li> Complement Naive Bayes </li>
+<p> Naive Baye’s suits the idea of tf-idf well since it has to do with word count and occurrence. Only two of the many Naive Baye’s variations suit our datset. The best parameters and results obtained were: </p>
+<div style="float:left">
+<table>
+      <tr><th>Parameter Name</th><th> Parameter Value</th></tr>
+      <tr><td>Alpha</td>
+        <td>3.4 (default=1)</td>
+        </tr><tr>
+        <td>Validation accuracy</td>
+        <td>60.17%</td>
+        </tr>       
+</table></div>
+<div style="float:right">
+<table>
+      <tr><th></th><th colspan="2">Prediction Values</th></tr>
+      <tr><td>Actual</td>
+        <td>0</td>
+        <td>1</td>
+        </tr><tr>
+        <td>0</td>
+        <td>43 (TN)</td>
+        <td>1 (FP)</td>
+        </tr><tr>
+    <td>1</td>
+        <td>31 (FN)</td>
+        <td>2 (TP)</td>
+        </tr>      
+</table></div><br><br><br><br><br><br>
+<p> The confusion matrix on the test data is given above. Alpha is the additive smoothing parameter. It can be seen that complement naive bayes does a good job in finding the true negatives. However, the higher number of false negatives in naive bayes has decreased the number of true positives.
+</p>
+<li> Multinomial Naive Bayes</li>
+<p> Multinomial Naive Bayes was chosen as it is supposed to work well with text classification using discrete features or tfi-df features. The best parameters and results obtained were: </p>
+<div style="float:left">
+<table>
+      <tr><th>Parameter Name</th><th> Parameter Value</th></tr>
+      <tr><td>Alpha</td>
+        <td>0.34 (default=1)</td>
+        </tr><tr>
+        <td>Validation accuracy</td>
+        <td>60.17%</td>
+        </tr>       
+</table></div>
+<div style="float:right">
+<table>
+      <tr><th></th><th colspan="2">Prediction Values</th></tr>
+      <tr><td>Actual</td>
+        <td>0</td>
+        <td>1</td>
+        </tr><tr>
+        <td>0</td>
+        <td>40 (TN)</td>
+        <td>4 (FP)</td>
+        </tr><tr>
+    <td>1</td>
+        <td>29 (FN)</td>
+        <td>4 (TP)</td>
+        </tr>      
+</table></div><br><br><br><br><br><br>
+<p> We can see that the validation accuracy in multinomial naive bayes is the same as the validation accuracy in complement naive bayes. The confusion matrix on the test data: </p>
+<li> Random Forest </li>
+<p> The best parameters and results obtained were: </p>
+<div style="float:left">
+<table>
+      <tr><th>Parameter Name</th><th> Parameter Value</th></tr>
+      <tr><td>n_estimators</td>
+        <td>1100</td>
+        </tr><tr>
+        <td>max_features</td>
+        <td>auto</td>
+        </tr><tr>
+         <td>max_depth</td>
+        <td>None</td>
+        </tr><tr> 
+        <td>min_samples_split</td>
+        <td>2</td>
+        </tr><tr>
+         <td>bootstrap</td>
+        <td>True</td>
+        </tr><tr>   
+        <td>Validation accuracy</td>
+        <td>59.32%</td>
+        </tr>       
+</table></div>
+<div style="float:right">
+<table>
+      <tr><th></th><th colspan="2">Prediction Values</th></tr>
+      <tr><td>Actual</td>
+        <td>0</td>
+        <td>1</td>
+        </tr><tr>
+        <td>0</td>
+        <td>44 (TN)</td>
+        <td>0 (FP)</td>
+        </tr><tr>
+    <td>1</td>
+        <td>33 (FN)</td>
+        <td>0 (TP)</td>
+        </tr>      
+</table></div><br><br><br><br><br><br><br><br><br><br><br>
+<p> Compared to SVM, complement naive bayes and multinomial naive bayes, the validation accuracy of random forest is low. The confusion matrix on the test data: Random Forest is not able to correctly predict the positive values. The number of true positives is 0. It works better for true negatives. </p>
+<li>  Logistic Regression </li>
+<p> We have set the solver as 'liblinear' and max iterations as 2000. The best parameters and results obtained were:</p>
+<div style="float:left">
+<table>
+      <tr><th>Parameter Name</th><th> Parameter Value</th></tr>
+      <tr><td>Penalty</td>
+        <td>l1</td>
+        </tr><tr>
+        <td>C</td>
+        <td>385.352</td>
+        </tr><tr>
+         <td>fit_intercept</td>
+        <td>True</td>
+        </tr><tr> 
+        <td>class_weight</td>
+        <td>None</td>
+        </tr><tr>  
+        <td>Validation accuracy</td>
+        <td>51.87%</td>
+        </tr>       
+</table></div>
+<div style="float:right">
+<table>
+      <tr><th></th><th colspan="2">Prediction Values</th></tr>
+      <tr><td>Actual</td>
+        <td>0</td>
+        <td>1</td>
+        </tr><tr>
+        <td>0</td>
+        <td>28 (TN)</td>
+        <td>16 (FP)</td>
+        </tr><tr>
+    <td>1</td>
+        <td>20 (FN)</td>
+        <td>13 (TP)</td>
+        </tr>      
+</table></div><br><br><br><br><br><br><br><br><br><br>
+<p> The validation accuracy for logistic regression is lower than the rest of the algorithms used. The confusion matrix on the test data is given above. </p>
+<table>
+      <tr><th>Model</th><th>Test Accuracy</th><th>Precision</th><th>Recall</th></tr>
+      <tr><td>Complement Naive Bayes</td>
+        <td>0.58</td>
+        <td>0.62</td>
+        <td>0.58</td>
+        </tr><tr>
+        <td>Multinomial Naive Bayes</td>
+        <td>0.57</td>
+        <td>0.55</td>
+        <td>0.57</td>
+        </tr><tr>
+        <td>SVM</td>
+        <td>0.57</td>
+        <td>0.33</td>
+        <td>0.57</td>
+      </tr><tr>
+        <td>Random Forest</td>
+        <td>0.57</td>
+        <td>0.33</td>
+        <td>0.57</td>
+        </tr><tr>
+        <td>Logistic Regression</td>
+        <td>0.53</td>
+        <td>0.53</td>
+        <td>0.53</td>
+        </tr>
+</table>
+<p> The number of true negatives found is lower than the other algorithms. However, the number of true positives is higher than the other algorithms. Overall, it does not do a very good job since the number of false positives and false negatives are also high. </p>
+<p> Thus overall we see that BERT performs much better than almost all TFIDF methods. The reason behind this is definitely that even though tf-idf representations provide weights to different words based only on the frequency and uniqueness they are unable to capture the word meaning in any sense. That’s why BERT works better for our dataset - because unlike tasks where each label is associated with a group of words (sentiment analysis), here meaning of the word matters more than its chances of belonging to a set of words (eg. positive/negative). </p>
+<p> Comparison with the other methods </p>
+<p> In our approach, we believe the novelty in the experimentation is brought through the use of BERT and tf-idf encodings of the abstract. While building the features from the raw research paper, features like the abstract complexity, abstract novelty, words from the top title words, research strength score were incorporated in our approach. Instead of building features on the frequency of words on content or abstract, readability and complexity is taken into consideration. In the modelling part, different tree based models were studied with a large range of hyper-parameters. </p>
+</ol>
+ 
+
     <h2><a id="user-content-header-3" class="anchor" href="#header-3" aria-hidden="true"><span
         class="octicon octicon-link"></span></a>2) Unsupervised</h2>
     <p>We try the following unsupervised clustering algorithms in our approach. Motivation behind using unsupervised techniques was to find/observe latent patterns in the data: for example, papers from one topic being accepted more than others. For all the approaches, the data was properly standardized and normalized with dimensionality  being reduced to 2 by PCA  for visualisation in 2D. The analysis and results are as follows:</p>
