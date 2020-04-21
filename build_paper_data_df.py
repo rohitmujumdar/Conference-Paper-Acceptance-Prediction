@@ -15,8 +15,9 @@ from prepare_data import build_affiliation_dictionary,load_data_files_into_raw_d
 '''
 #read author-affiliation file from csrankings hidden page
 
-data_path,data_split_category = 'data','test'
+data_path,data_split_category = 'data','train'
 pickle_file_name = 'paper_data_' + str(data_split_category) + '.pkl'
+#pickle_file_name = 'paper_data_tfidf_' + str(data_split_category) + '.pkl'
 author_university_df = pd.read_csv(os.path.join(data_path,"author_university_list.csv"))
 #read university-research score file from csrankings main page
 university_score_df = pd.read_csv(os.path.join(data_path,"csrankings.csv")).drop_duplicates(subset=['institute'])
