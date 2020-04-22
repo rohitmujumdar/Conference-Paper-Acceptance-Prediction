@@ -33,7 +33,7 @@
 
     <h2><a id="user-content-header-2" class="anchor" href="#header-3" aria-hidden="true"><span
         class="octicon octicon-link"></span></a>2. Previous Work</h2>
-    <p>Kang, et. al. [1] have published the PeerRead dataset where they experimented with Paper Acceptance classification, using 22 coarse features, e.g., length of the title and whether jargon terms such as ‘deep’ and ‘neural’ appear in the abstract, as well as sparse and dense lexical features like Glove and TFIDF embeddings of abstract to, with an accuracy of 65.3%. [12] use a subset of these features to predict the acceptance of papers by training on the ICLR 2017 data using a few basic ML algorithms. We build on these techniques to try and improve the results of paper acceptance classification for the ICLR 2017 dataset. We add our own features, eliminate a few, and experiment with a much wider range of supervised and introduce attention-based encodings in the lexical features set. There hasn’t been work on the unsupervised front for this dataset, which allows our unsupervised analysis to be a good baseline. </p>
+    <p>Kang, et. al. [1] have published the PeerRead dataset where they experimented with Paper Acceptance classification, using 22 coarse features, e.g., length of the title and whether jargon terms such as ‘deep’ and ‘neural’ appear in the abstract, as well as sparse and dense lexical features like Glove and TFIDF embeddings of abstract to, with an accuracy of 65.3%,  trained on ICLR 2017 and arxiv papers. [12] use a subset of these features to predict the acceptance of papers by training on the ICLR 2017 data using a few basic ML algorithms. We build on these techniques to try and improve the results of paper acceptance classification for the ICLR 2017 dataset. We add our own features, eliminate a few, and experiment with a much wider range of supervised and introduce attention-based encodings in the lexical features set. There hasn’t been work on the unsupervised front for this dataset, which allows our unsupervised analysis to be a good baseline. </p>
     <h2><a id="user-content-header-3" class="anchor" href="#header-3" aria-hidden="true"><span
       class="octicon octicon-link"></span></a>3. Methods</h2>
     <h3><a id="user-content-header-3" class="anchor" href="#header-3" aria-hidden="true"><span
@@ -71,7 +71,7 @@
         <td>10770</td>
         <td>-</td></tr>
     </table>
-    <p>Upon closer inspection we found several inconsistencies in the data - for example, not all papers from NIPS or ACL had their accept/reject decisions. Besides, the data for ACL and CoNLL was too less to be used for training a model. That is why, from all the data available, we have focussed our supervised learning work on ICLR 2017 data.   For the papers which didn’t have labels of acceptance, like arXiv were used for unsupervised tasks which didn’t rely on class labels. </p>
+    <p>Upon closer inspection we found several inconsistencies in the data - for example, not all papers from NIPS or ACL had their accept/reject decisions. Besides, the data for ACL and CoNLL was too less to be used for training a model. While the baseline also used arxiv papers to train their data, doing so would have factored in multiple conferences, over multiple years preventing us from focussing on prediction for a particular conference. That is why, from all the data available, we have focussed our supervised learning work on ICLR 2017 data.   For the papers which didn’t have labels of acceptance, like arXiv were used for unsupervised tasks which didn’t rely on class labels. </p>
     <p>For unsupervised learning, clustering used ICLR 2017 data which had information for 349 papers. For topic modelling, all the data from ICLR 2017 + CONLL + ACL and the complete arxiv dataset was used which contained data for 349, 19, 123 and 10,599 papers respectively (11090 papers in total). We receive raw pdfs and their reviews and labels (accept/reject) as our input, transform them into JSON files using science-parse, a library created by the PeerRead authors.</p>
 
     <h3><a id="user-content-header-2" class="anchor" href="#header-2" aria-hidden="true"><span
@@ -837,41 +837,39 @@ On the other hand, the word cloud from comments of rejected papers focus on word
 
     <h2><a id="user-content-header-3" class="anchor" href="#header-3" aria-hidden="true"><span
       class="octicon octicon-link"></span></a>5. Discussion and Conclusion</h2>
-    <p>We tried 14 supervised learning models and 5  unsupervised. Our overall accuracy is ~65 which is not very higher than that of the baseline in PeerRead. While the baseline model algorithms are not known, our Random Forest model without dimension reduction gave the best accuracy, which shows that the feature engineering we performed especially by adding our own new features definitely helped.  It is possible that our model did not show a significant improvement on the baseline because of the small amount of data available to train and test on (only 349 and 77 data points respectively).</p>
+    <p>We tried 14 supervised learning models and 5  unsupervised. Our overall accuracy is ~65 which is not very higher than that of the baseline in PeerRead. However, given that our data is trained only for ICLR 2017 and the baseline also includes arxiv papers, it would not be a fair comparison. While the baseline model algorithms are not known, our Random Forest model without dimension reduction gave the best accuracy, which shows that the feature engineering we performed especially by adding our own new features definitely helped.  It is possible that our model did not show a significant improvement on the baseline because of the small amount of data available to train and test on (only 349 and 77 data points respectively).  </p>
     <p>Our primary goal was to test the hypothesis that non-core content factors of a research paper could indicate the potentiality of its acceptance. As such, the accuracy and results we got do not indicate that our hypothesis holds. We need much more training and testing data for the results to start showing a pattern, so that the hypothesis can be proved or disproved. Our experiments were conducted for a particular year of only one conference. Therefore, extrapolating the results to generalise any claim would be incorrect.
 While we did have data on multiple conferences, it was fairly incomplete especially in terms of lack of labels. If a huge amount of complete, consistent data for multiple conferences becomes available, we could train our models on that and further test our hypothesis. Thus, scaling widely across conferences and years could help build a strong prediction model.
 </p>
-<p>Our second motivation was to be able to assist peer reviewers with paper recommendations. Since our first hypothesis hasn't been proved, we do not feel that our project in its current stage is a useful tool for this process. Even if our models start giving excellent results, for such a recommendation tool to be foolproof, one would need to perform finer and wiser feature engineering on the core-content of paper along with the non-core content.
-Also, we were successfully able to identify clusters/topics which the reviewers may be biased towards which is something new paper submissions can keep in mind. Word cloud built more on this idea. We also compared different sentence embeddings like BERT, TF-IDF along with comparing different clustering algorithms. We were also able to confirm that the number of clusters is 6 by using the elbow method and observing the dendrograms.
-</p>
-<p>Future work could include trying to cluster and classify papers based on the conferences. This could be based on developing a Paper2Vec model, which could also be used for other downstream thoughts.
-We could also use the model of one conference to predict the acceptance in another conference and if both conference models show a correlation in predictions, it could be concluded that the two conferences prefer similar types of papers.
+<p>Our second motivation was to be able to assist peer reviewers with paper recommendations. Since our first hypothesis hasn't been proved, we do not feel that our project in its current stage is a useful tool for this process. Even if our models start giving excellent results, for such a recommendation tool to be foolproof, one would need to perform finer and wiser feature engineering on the core-content of paper along with the non-core content.   Also, we were successfully able to identify clusters/topics which the reviewers may be biased towards which is something new paper submissions can keep in mind. Word cloud built more on this idea. We also compared different sentence embeddings like BERT, TF-IDF along with comparing different clustering algorithms. We were also able to confirm that the number of clusters is 6 by using the elbow method and observing the dendrograms. </p>
+<p>Future work could include trying to cluster all arxiv submissions into arxiv paper subject classes [22] categories. According to the dataset structure we would expect the papers to be categorised into cs.AI - Artificial Intelligence, cs.LG - Machine Learning and cs.CL - Computation and Language. But finer and more robust clustering algorithms can also help discover nuanced sub categories for arxiv submissions. Another future work idea is to supplement the patterns learned from the unsupervised analysis to the feature-engineering stage of supervised to make the paper acceptance classification more robust.
 </p>
 
   <h2><a id="user-content-header-4" class="anchor" href="#header-4" aria-hidden="true"><span
     class="octicon octicon-link"></span></a>References</h2>
-  <ol>
-    <li>D. Kang, W. Ammar, B. Dalvi, M. van Zuylen, S. Kohlmeier, E. H. Hovy, and R. Schwartz, “A Dataset of Peer Reviews (PeerRead): Collection, Insights and NLP Applications,” CoRR, vol. abs/1804.09635, 2018.</li>
-    <li>lixin4ever, “Statistics of acceptance rate for the main AI conferences,” 12 2018. </li>
-    <li>Y. Dong, R. A. Johnson, and N. V. Chawla, “Can Scientiﬁc Impact Be Predicted?,” IEEE Transactions on Big Data, vol. 2, pp. 18–30, 2016. </li>
-    <li>D. McNamara, P. Wong, P. Christen, and K. S. Ng, “Predicting High Impact Academic Papers Using Citation Network Features,” in Trends and  Applications in Knowledge Discovery and Data Mining, (Berlin, Heidelberg),</li>
-    pp. 14–25, Springer Berlin Heidelberg, 2013.</li>
-    <li>“CVPR Paper Controversy; ML Community Reviews Peer Review,” Medium, Oct 2018. </li>
-    <li>Xie, Jianjun. (2016). Predicting Institution-Level Paper Acceptance at Conferences: A Time-Series Regression Approach. </li>
-    <li>Recurrent Neural Network for Acceptance Acceptance https://mc.ai/recurrent-neural-network-for-prediction-acceptance[Online] </li>
-    <li>J.-B. Huang, “Deep Paper Gestalt,” 12 2018. </li>
-    <li>C. von Bearnensquash. Paper gestalt. In Secret Proceedings of Computer Vision and Pattern Recognition, 2010. 1, 2, 4. </li>
-    <li>Qian, Yujie & Dong, Yinpeng & Ma, Ye & Jin, Hailong & Li, Juanzi. (2016). Feature Engineering and Ensemble Modeling for Paper Acceptance Rank  Prediction.</li>
-    <li>M. C. William Jen, Shichang Zhang, “Predicting Conference Paper Acceptance,” 12 2018. </li>
-    <li>E. Walsh, Michael W Rooney, Louis Appleby, and Greg Wilkinson. 2000. Open peer review: a ran-domised controlled trial.The British journal of  psy-chiatry : the journal of mental science176:47–51.</li>
-    <li>Aliaksandr Birukou, Joseph R. Wakeling, Claudio Bar-tolini, Fabio Casati, Maurizio Marchese, KatsiarynaMirylenka, Nardine Osman, Azzurra Ragone,  Car-les Sierra, and Aalam Wassef. 2011. Alternatives topeer review: Novel approaches for research evalua-tion. InFront. Comput. Neurosci.</li>
-    <li>Azzurra Ragone, Katsiaryna Mirylenka, Fabio Casati,and Maurizio Marchese. 2011. A quantitative analy-sis of peer review. InProc. of ISSI. </li>
-    <li>Drummond Rennie. 2016. Make peer review scien-tific: thirty years on from the first congress on peerreview, drummond rennie reflects on the  improve-ments brought about by research into the process–and calls for more.Nature535(7610):31–34.</li>
-    <li>Seán G Roberts and Tessa Verhoef. 2016.Double-blind reviewing at evolang 11 reveals gender bias.Journal of Language Evolution1(2):163–167. </li>
-    <li>Andrew Tomkins, Min Zhang, and William D Heavlin.2017. Single versus double blind reviewing at wsdm2017. ArXiv:1702.00502. </li>
-    <li>Claire Le Goues, Yuriy Brun, Sven Apel, EmeryBerger, Sarfraz Khurshid, and Yannis Smaragdakis.2017.Effectiveness of anonymization in double-blind  review. ArXiv:1709.01609.</li>
-    <li>Transformers https://github.com/huggingface/transformers [Online]</li>
-  </ol>
+  <ul>
+   <li>[1] D. Kang, W. Ammar, B. Dalvi, M. van Zuylen, S. Kohlmeier, E. H. Hovy, and R. Schwartz, “A Dataset of Peer Reviews (PeerRead): Collection, Insights and NLP Applications,” CoRR, vol. abs/1804.09635, 2018.</li>
+  <li>[2] lixin4ever, “Statistics of acceptance rate for the main AI conferences,” 12 2018.</li>
+  <li>[3] Y. Dong, R. A. Johnson, and N. V. Chawla, “Can Scientiﬁc Impact Be Predicted?,” IEEE Transactions on Big Data, vol. 2, pp. 18–30, 2016.</li>
+  <li>[4] D. McNamara, P. Wong, P. Christen, and K. S. Ng, “Predicting High Impact Academic Papers Using Citation Network Features,” in Trends and Applications in Knowledge Discovery and Data Mining, (Berlin, Heidelberg),</li>
+  <li>pp. 14–25, Springer Berlin Heidelberg, 2013.</li>
+  <li>[5] “CVPR Paper Controversy; ML Community Reviews Peer Review,” Medium, Oct 2018.</li>
+  <li>[6] Xie, Jianjun. (2016). Predicting Institution-Level Paper Acceptance at Conferences: A Time-Series Regression Approach. </li>
+  <li>[7] Recurrent Neural Network for Acceptance Acceptance https://mc.ai/recurrent-neural-network-for-prediction-acceptance [Online]</li>
+  <li>[8] J.-B. Huang, “Deep Paper Gestalt,” 12 2018.</li>
+  <li>[10] C. von Bearnensquash. Paper gestalt. In Secret Proceedings of Computer Vision and Pattern Recognition, 2010. 1, 2, 4.</li>
+  <li>[11] Qian, Yujie & Dong, Yinpeng & Ma, Ye & Jin, Hailong & Li, Juanzi. (2016). Feature Engineering and Ensemble Modeling for Paper Acceptance Rank Prediction. </li>
+  <li>[12] M. C. William Jen, Shichang Zhang, “Predicting Conference Paper Acceptance,” 12 2018.</li>
+  <li>[14] E. Walsh, Michael W Rooney, Louis Appleby, and Greg Wilkinson. 2000. Open peer review: a ran-domised controlled trial.The British journal of psy-chiatry : the journal of mental science176:47–51.</li>
+  <li>[15] Aliaksandr Birukou, Joseph R. Wakeling, Claudio Bar-tolini, Fabio Casati, Maurizio Marchese, KatsiarynaMirylenka, Nardine Osman, Azzurra Ragone, Car-les Sierra, and Aalam Wassef. 2011. Alternatives topeer review: Novel approaches for research evalua-tion. InFront. Comput. Neurosci.</li>
+  <li>[16] Azzurra Ragone, Katsiaryna Mirylenka, Fabio Casati,and Maurizio Marchese. 2011. A quantitative analy-sis of peer review. InProc. of ISSI.</li>
+  <li>[17] Drummond Rennie. 2016. Make peer review scien-tific: thirty years on from the first congress on peerreview, drummond rennie reflects on the improve-ments brought about by research into the process–and calls for more.Nature535(7610):31–34.</li>
+  <li>[18] Seán G Roberts and Tessa Verhoef. 2016.Double-blind reviewing at evolang 11 reveals gender bias.Journal of Language Evolution1(2):163–167.</li>
+  <li>[19] Andrew Tomkins, Min Zhang, and William D Heavlin.2017. Single versus double blind reviewing at wsdm2017. ArXiv:1702.00502.</li>
+  <li>[20] Claire Le Goues, Yuriy Brun, Sven Apel, EmeryBerger, Sarfraz Khurshid, and Yannis Smaragdakis.2017.Effectiveness of anonymization in double-blind review. ArXiv:1709.01609.</li>
+  <li>[21] https://github.com/huggingface/transformers</li>
+  <li>[22] https://arxiv.org/corr/subjectclasses</li>
+  </ul>
   </section>
 </body>
 </html>
