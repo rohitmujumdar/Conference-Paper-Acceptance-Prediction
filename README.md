@@ -13,4 +13,4 @@ With the huge volume of papers being churned out in any single area of computing
 
 In order for the tool to have more capabilities for recommendation than relying on non-core factors, we also intend to use unsupervised methods to find patterns in the data and explore its underlying structure, through tasks like topic-modelling and clustering. This could help in detecting topic and domain trends over conferences over several years and or in ascertaining peculiarities of papers potentially acceptable papers. 
 
-YOu can read more at : https://rohangoel.com/Acceptometer/
+You can read more at : https://rohangoel.com/Acceptometer/
