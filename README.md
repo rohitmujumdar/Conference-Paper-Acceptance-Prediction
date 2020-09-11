@@ -1,8 +1,9 @@
-#This project was done as a part of Georgia Tech's  CS 7641 - Machine Learning course, Spring 2020
+# Title : Conference Paper Acceptance Prediction
 
-#Title : Conference Paper Acceptance Prediction
+## This project was done as a part of Georgia Tech's  CS 7641 - Machine Learning course, Spring 2020
 
-Summary : Academic research papers have several integral and peripheral aspects apart from the core content such as the authors’ professional affiliations, the number of references or the text readability, to name a few. While the methods and ideas presented in the core content are the most crucial and driving factor for the paper to be accepted by peer reviewers to a conference, it is possible that the aforementioned non-core aspects also influence or contribute to the decision unknowingly. It is possible that the presence of these factors in a certain measure is a subtle indication of a high-quality research paper. For example, it is possible that because the author belongs to one of the topmost universities, she already has a good history of accepted research papers, and her next research paper will have highly innovative ideas articulated well and thus, stand a good chance of acceptance.
+### Summary
+Academic research papers have several integral and peripheral aspects apart from the core content such as the authors’ professional affiliations, the number of references or the text readability, to name a few. While the methods and ideas presented in the core content are the most crucial and driving factor for the paper to be accepted by peer reviewers to a conference, it is possible that the aforementioned non-core aspects also influence or contribute to the decision unknowingly. It is possible that the presence of these factors in a certain measure is a subtle indication of a high-quality research paper. For example, it is possible that because the author belongs to one of the topmost universities, she already has a good history of accepted research papers, and her next research paper will have highly innovative ideas articulated well and thus, stand a good chance of acceptance.
 
 Our project explores this idea, and aims to assess if these non-core-content factors could play a role in predicting the chances of a paper being accepted to a conference. It must be noted that we do not intend to say that peer-reviewers get biased or make decisions because of the presence of these factors. We hypothesize that research papers, potentially acceptable because of their merit, may have these factors in common.
 
